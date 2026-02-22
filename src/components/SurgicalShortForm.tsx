@@ -1,19 +1,59 @@
 import { useEffect, useState } from 'react';
 
-import PatientHeader from './PatientHeader';
 import type { SurgicalShortEvaluation } from '../types/evaluation';
+import { mockPatients, mockNurses } from '../data/mockEvaluationData';
+import { generateAndDownloadEvaluationPDF } from '../utils/evaluationPdfGenerator';
 
 interface SurgicalShortFormProps {
   initialData?: SurgicalShortEvaluation;
   onSave: (data: SurgicalShortEvaluation) => void;
   onCancel: () => void;
+  preloadedPatientId?: string;
+  preloadedNurseId?: string;
 }
 
 const getEmptyEvaluation = (): Omit<SurgicalShortEvaluation, 'id' | 'date'> => ({
   evaluationType: 'surgical_short',
   evaluationName: 'Evaluación al Paciente Quirúrgico de Corta Estancia',
   nurse: '',
-  patientName: 'Juan Pérez',
+  patientName: '',
+
+  // Patient information (will be preloaded)
+  patientAddress: '',
+  patientNIS: '',
+  patientPhone: '',
+  patientDateOfBirth: '',
+  nurseCollegiateNumber: '',
+
+  // Evaluation metadata
+  evaluationDate: new Date().toISOString().split('T')[0],
+  evaluationTime: new Date().toTimeString().slice(0, 5),
+
+  // Vital constants
+  temperature: '',
+  viaAnular: 'Oral',
+  tasSistolica: '',
+  tadDiastolica: '',
+  fc: '',
+  fr: '',
+  satO2: '',
+  aireAmb: 'Aire ambiente',
+
+  // Allergies
+  hasAllergies: false,
+  allergiesDetails: '',
+
+  // Personal history
+  personalHistory: '',
+
+  // Habitual medication
+  habitualMedication: '',
+
+  // Signature fields
+  signedBy: '',
+  reportDate: new Date().toLocaleDateString('es-ES'),
+  reportTime: new Date().toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' }),
+
   respiration: {
     noAlteration: true,
     difficultyBreathing: false,
@@ -125,16 +165,82 @@ const getEmptyEvaluation = (): Omit<SurgicalShortEvaluation, 'id' | 'date'> => (
   additionalComments: '',
 });
 
-const SurgicalShortForm = ({ initialData, onSave, onCancel }: SurgicalShortFormProps) => {
-  const [formData, setFormData] = useState<Omit<SurgicalShortEvaluation, 'id' | 'date'>>(
-    initialData ? { ...initialData } : getEmptyEvaluation()
-  );
+const SurgicalShortForm = ({ initialData, onSave, onCancel, preloadedPatientId, preloadedNurseId }: SurgicalShortFormProps) => {
+  const [formData, setFormData] = useState<Omit<SurgicalShortEvaluation, 'id' | 'date'>>(() => {
+    if (initialData) {
+      return { ...initialData };
+    }
+
+    const empty = getEmptyEvaluation();
+
+    // Preload patient data if provided
+    if (preloadedPatientId) {
+      const patient = mockPatients.find(p => p.id === preloadedPatientId);
+      if (patient) {
+        empty.patientName = patient.nombre;
+        empty.patientAddress = patient.direccion;
+        empty.patientNIS = patient.nis;
+        empty.patientPhone = patient.telefono;
+        empty.patientDateOfBirth = patient.fechaNacimiento;
+        empty.hasAllergies = patient.alergias !== 'No conocidas';
+        empty.allergiesDetails = patient.alergias;
+        empty.personalHistory = patient.antecedentesPersonales;
+        empty.habitualMedication = patient.medicacionHabitual;
+        empty.temperature = patient.temperatura;
+        empty.viaAnular = patient.viaAnular;
+        empty.tasSistolica = patient.tasSistolica;
+        empty.tadDiastolica = patient.tadDiastolica;
+        empty.fc = patient.fc;
+        empty.fr = patient.fr;
+        empty.satO2 = patient.satO2;
+        empty.aireAmb = patient.aireAmb;
+      }
+    }
+
+    // Preload nurse data if provided
+    if (preloadedNurseId) {
+      const nurse = mockNurses.find(n => n.id === preloadedNurseId);
+      if (nurse) {
+        empty.nurse = nurse.nombre;
+        empty.nurseCollegiateNumber = nurse.numeroColegiado;
+        empty.signedBy = nurse.nombre;
+      }
+    }
+
+    return empty;
+  });
+
+  const [currentPage, setCurrentPage] = useState<1 | 2>(1);
+  const [generatingPDF, setGeneratingPDF] = useState(false);
 
   useEffect(() => {
     if (initialData) {
       setFormData({ ...initialData });
     }
   }, [initialData]);
+
+  const handleSaveAndPrint = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!formData.nurse.trim()) {
+      alert('Por favor ingrese el nombre de la enfermera');
+      return;
+    }
+
+    const evaluation: SurgicalShortEvaluation = {
+      ...formData,
+      id: initialData?.id || `eval-${Date.now()}`,
+      date: initialData?.date || new Date().toISOString(),
+    };
+
+    // Guardar la evaluación
+    onSave(evaluation);
+
+    // Generar y descargar el PDF
+    setGeneratingPDF(true);
+    await generateAndDownloadEvaluationPDF(evaluation);
+    setGeneratingPDF(false);
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -153,42 +259,257 @@ const SurgicalShortForm = ({ initialData, onSave, onCancel }: SurgicalShortFormP
     onSave(evaluation);
   };
 
-  return (
-    <div className="evaluation-form">
-      <PatientHeader />
+  const formatDate = (dateString: string) => {
+    if (!dateString) return '';
+    return dateString;
+  };
 
+  return (
+    <div className="surgical-report-form">
       <form onSubmit={handleSubmit}>
-        <div className="form-header">
-          <h2>Evaluación de Enfermería al Paciente Quirúrgico de Corta Estancia</h2>
+        {/* Header - Same style as surgical report */}
+        <div className="report-header">
+          <div style={{ flex: 1 }}>
+            {/* Sin logo según solicitud del usuario */}
+          </div>
+          <div style={{ textAlign: 'center', flex: 2 }}>
+            <h2 style={{ margin: '0 0 5px 0', color: '#2c3e50', fontSize: '1.6em' }}>
+              EVALUACIÓN DE ENFERMERÍA AL PACIENTE QUIRÚRGICO DE CORTA ESTANCIA
+            </h2>
+            <p style={{ margin: 0, fontSize: '1em', color: '#666', fontWeight: 500 }}>
+              PÁGINA: {currentPage}/2
+            </p>
+          </div>
+          <div style={{ flex: 1, textAlign: 'right' }}>
+            <p style={{ margin: 0, fontSize: '0.9em', color: '#666' }}>
+              <strong>Fecha:</strong> {formatDate(formData.evaluationDate)}
+            </p>
+          </div>
         </div>
 
-        {/* Datos de la enfermera */}
-        <div className="form-section">
-          <h3>Datos del Registro</h3>
+        {/* Patient Info Section - Same style as surgical report */}
+        <div className="patient-info-section">
           <div className="form-row">
-            <div className="form-group">
-              <label>Enfermera que realiza la evaluación:</label>
+            <div className="form-group" style={{ flex: 2 }}>
+              <label>Paciente</label>
               <input
                 type="text"
-                value={formData.nurse}
-                onChange={(e) => setFormData({ ...formData, nurse: e.target.value })}
-                placeholder="Nombre de la enfermera"
-                style={{ width: '300px' }}
+                value={formData.patientName}
+                readOnly
+                className="info-field readonly"
+              />
+            </div>
+            <div className="form-group" style={{ flex: 1 }}>
+              <label>NIS</label>
+              <input
+                type="text"
+                value={formData.patientNIS}
+                readOnly
+                className="info-field readonly"
+              />
+            </div>
+          </div>
+
+          <div className="form-row">
+            <div className="form-group" style={{ flex: 2 }}>
+              <label>Dirección</label>
+              <input
+                type="text"
+                value={formData.patientAddress}
+                readOnly
+                className="info-field readonly"
+              />
+            </div>
+            <div className="form-group" style={{ flex: 1 }}>
+              <label>Teléfono</label>
+              <input
+                type="text"
+                value={formData.patientPhone}
+                onChange={(e) => setFormData({ ...formData, patientPhone: e.target.value })}
+                className="info-field"
+              />
+            </div>
+            <div className="form-group" style={{ flex: 1 }}>
+              <label>Fecha de Nacimiento</label>
+              <input
+                type="text"
+                value={formData.patientDateOfBirth}
+                readOnly
+                className="info-field readonly"
               />
             </div>
           </div>
         </div>
 
-        {/* NECESIDAD DE RESPIRACIÓN */}
-        <div className="form-section">
-          <h3>
-            NECESIDAD DE RESPIRACIÓN
-            {formData.respiration.noAlteration && (
-              <span className="no-alteration-badge" style={{ marginLeft: '15px' }}>Sin alteración observada</span>
-            )}
-          </h3>
-          <div className="checkbox-group">
+        {/* DUE and Date Section */}
+        <div className="form-row" style={{ marginTop: '15px', marginBottom: '15px' }}>
+          <div className="form-group" style={{ flex: 2 }}>
+            <label>DUE</label>
+            <input
+              type="text"
+              value={formData.nurse}
+              readOnly
+              className="info-field readonly"
+            />
+          </div>
+          <div className="form-group" style={{ flex: 1 }}>
+            <label>Nº Colegiado</label>
+            <input
+              type="text"
+              value={formData.nurseCollegiateNumber}
+              readOnly
+              className="info-field readonly"
+            />
+          </div>
+        </div>
+
+        {/* Vital Constants Section */}
+        <div className="form-section" style={{ backgroundColor: '#f8f9fa', padding: '15px', marginBottom: '15px' }}>
+          <p style={{ fontSize: '11px', color: '#d32f2f', marginBottom: '10px', fontStyle: 'italic' }}>
+            Precargar últimos valores registrados en constantes
+          </p>
+          <div className="form-row">
+            <div className="form-group">
+              <label>Temperatura</label>
+              <input
+                type="text"
+                value={formData.temperature}
+                readOnly
+                className="info-field readonly"
+                style={{ width: '80px' }}
+              />
+            </div>
+            <div className="form-group">
+              <label>Vía Anular</label>
+              <input
+                type="text"
+                value={formData.viaAnular}
+                readOnly
+                className="info-field readonly"
+                style={{ width: '100px' }}
+              />
+            </div>
+            <div className="form-group">
+              <label>TAS/TAD</label>
+              <input
+                type="text"
+                value={`${formData.tasSistolica}/${formData.tadDiastolica}`}
+                readOnly
+                className="info-field readonly"
+                style={{ width: '100px' }}
+              />
+            </div>
+            <div className="form-group">
+              <label>FC</label>
+              <input
+                type="text"
+                value={formData.fc}
+                readOnly
+                className="info-field readonly"
+                style={{ width: '80px' }}
+              />
+            </div>
+            <div className="form-group">
+              <label>FR</label>
+              <input
+                type="text"
+                value={formData.fr}
+                readOnly
+                className="info-field readonly"
+                style={{ width: '80px' }}
+              />
+            </div>
+            <div className="form-group">
+              <label>SatO2</label>
+              <input
+                type="text"
+                value={formData.satO2}
+                readOnly
+                className="info-field readonly"
+                style={{ width: '80px' }}
+              />
+            </div>
+            <div className="form-group">
+              <label>Aire Amb.</label>
+              <input
+                type="text"
+                value={formData.aireAmb}
+                readOnly
+                className="info-field readonly"
+                style={{ width: '120px' }}
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Allergies Section */}
+        <div className="form-row" style={{ marginBottom: '15px', alignItems: 'center' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+            <span style={{ fontWeight: 'bold' }}>Alergias:</span>
             <div className="checkbox-item">
+              <input
+                type="radio"
+                id="allergies-no"
+                name="allergies"
+                checked={!formData.hasAllergies}
+                onChange={() => setFormData({ ...formData, hasAllergies: false })}
+              />
+              <label htmlFor="allergies-no">NO</label>
+            </div>
+            <div className="checkbox-item">
+              <input
+                type="radio"
+                id="allergies-yes"
+                name="allergies"
+                checked={formData.hasAllergies}
+                onChange={() => setFormData({ ...formData, hasAllergies: true })}
+              />
+              <label htmlFor="allergies-yes">SI</label>
+            </div>
+          </div>
+          <div className="form-group" style={{ flex: 1, marginLeft: '20px' }}>
+            <label>Especificar Alergias</label>
+            <input
+              type="text"
+              value={formData.allergiesDetails}
+              readOnly
+              className="info-field readonly"
+            />
+          </div>
+        </div>
+
+        {/* PAGE 1 CONTENT */}
+        {currentPage === 1 && (
+          <>
+            {/* Personal History Section - Full width */}
+            <div className="form-section">
+              <h3>Antecedentes personales:</h3>
+              <textarea
+                value={formData.personalHistory}
+                readOnly
+                className="info-field readonly"
+                rows={3}
+                style={{ width: '100%', resize: 'vertical' }}
+              />
+            </div>
+
+            {/* Habitual Medication Section - Full width */}
+            <div className="form-section">
+              <h3>Medicación habitual:</h3>
+              <textarea
+                value={formData.habitualMedication}
+                readOnly
+                className="info-field readonly"
+                rows={3}
+                style={{ width: '100%', resize: 'vertical' }}
+              />
+            </div>
+
+            {/* NECESIDAD DE RESPIRACIÓN */}
+            <div className="form-section">
+          <div className="section-header-with-checkbox">
+            <h3>NECESIDAD DE RESPIRACIÓN</h3>
+            <div className="checkbox-item inline-checkbox">
               <input
                 type="checkbox"
                 id="resp-noAlt"
@@ -205,8 +526,10 @@ const SurgicalShortForm = ({ initialData, onSave, onCancel }: SurgicalShortFormP
                   }
                 })}
               />
-              <label htmlFor="resp-noAlt">Sin alteración</label>
+              <label htmlFor="resp-noAlt" className="no-alteration-badge">Sin alteración observada</label>
             </div>
+          </div>
+          <div className="checkbox-group">
             <div className="checkbox-item">
               <input
                 type="checkbox"
@@ -241,7 +564,7 @@ const SurgicalShortForm = ({ initialData, onSave, onCancel }: SurgicalShortFormP
                   respiration: { ...formData.respiration, dyspnea: e.target.checked, noAlteration: false }
                 })}
               />
-              <label htmlFor="resp-disp">Dispnea</label>
+              <label htmlFor="resp-disp">Disnea</label>
             </div>
             <div className="checkbox-item">
               <input
@@ -268,14 +591,30 @@ const SurgicalShortForm = ({ initialData, onSave, onCancel }: SurgicalShortFormP
           </div>
         </div>
 
-        {/* NECESIDAD DE ALIMENTACIÓN */}
+        {/* NECESIDADES DE ALIMENTACIÓN */}
         <div className="form-section">
-          <h3>
-            NECESIDAD DE ALIMENTACIÓN
-            {formData.feeding.noAlteration && (
-              <span className="no-alteration-badge" style={{ marginLeft: '15px' }}>Sin alteración observada</span>
-            )}
-          </h3>
+          <div className="section-header-with-checkbox">
+            <h3>NECESIDADES DE ALIMENTACIÓN</h3>
+            <div className="checkbox-item inline-checkbox">
+              <input
+                type="checkbox"
+                id="feed-noAlt"
+                checked={formData.feeding.noAlteration}
+                onChange={(e) => setFormData({
+                  ...formData,
+                  feeding: {
+                    ...formData.feeding,
+                    noAlteration: e.target.checked,
+                    difficultyChewing: e.target.checked ? false : formData.feeding.difficultyChewing,
+                    difficultyDrinking: e.target.checked ? false : formData.feeding.difficultyDrinking,
+                    difficultySwallowing: e.target.checked ? false : formData.feeding.difficultySwallowing,
+                    refusesToEat: e.target.checked ? false : formData.feeding.refusesToEat,
+                  }
+                })}
+              />
+              <label htmlFor="feed-noAlt" className="no-alteration-badge">Sin alteración observada</label>
+            </div>
+          </div>
           <p style={{ fontWeight: '500', marginBottom: '10px' }}>Dificultad para:</p>
           <div className="checkbox-group">
             <div className="checkbox-item">
@@ -343,14 +682,14 @@ const SurgicalShortForm = ({ initialData, onSave, onCancel }: SurgicalShortFormP
             <div className="checkbox-item">
               <input
                 type="checkbox"
-                id="feed-ngt"
+                id="feed-sonda"
                 checked={formData.feeding.nasogastricTube}
                 onChange={(e) => setFormData({
                   ...formData,
                   feeding: { ...formData.feeding, nasogastricTube: e.target.checked }
                 })}
               />
-              <label htmlFor="feed-ngt">Sonda nasogástrica</label>
+              <label htmlFor="feed-sonda">Sonda</label>
             </div>
             <div className="checkbox-item">
               <input
@@ -391,18 +730,6 @@ const SurgicalShortForm = ({ initialData, onSave, onCancel }: SurgicalShortFormP
             <div className="checkbox-item">
               <input
                 type="checkbox"
-                id="feed-vomiting"
-                checked={formData.feeding.vomiting}
-                onChange={(e) => setFormData({
-                  ...formData,
-                  feeding: { ...formData.feeding, vomiting: e.target.checked }
-                })}
-              />
-              <label htmlFor="feed-vomiting">Vómitos</label>
-            </div>
-            <div className="checkbox-item">
-              <input
-                type="checkbox"
                 id="feed-nausea"
                 checked={formData.feeding.nausea}
                 onChange={(e) => setFormData({
@@ -412,69 +739,92 @@ const SurgicalShortForm = ({ initialData, onSave, onCancel }: SurgicalShortFormP
               />
               <label htmlFor="feed-nausea">Náuseas</label>
             </div>
+            <div className="checkbox-item">
+              <input
+                type="checkbox"
+                id="feed-vomiting"
+                checked={formData.feeding.vomiting}
+                onChange={(e) => setFormData({
+                  ...formData,
+                  feeding: { ...formData.feeding, vomiting: e.target.checked }
+                })}
+              />
+              <label htmlFor="feed-vomiting">Vómitos</label>
+            </div>
           </div>
 
-          <p style={{ fontWeight: '500', marginTop: '15px', marginBottom: '10px' }}>Screening nutricional:</p>
-          <div className="form-row">
-            <div className="form-group">
-              <label>Peso actual:</label>
-              <input
-                type="text"
-                value={formData.feeding.currentWeight}
-                onChange={(e) => setFormData({
-                  ...formData,
-                  feeding: { ...formData.feeding, currentWeight: e.target.value }
-                })}
-                style={{ width: '100px' }}
-              />
+          <div style={{ marginTop: '15px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px' }}>
+              <span style={{ fontWeight: '500' }}>Screening nutricional:</span>
+              <span style={{ fontSize: '11px', color: '#d32f2f' }}>
+                Precargar últimos valores registrados en constantes
+              </span>
             </div>
-            <div className="form-group">
-              <label>Talla:</label>
-              <input
-                type="text"
-                value={formData.feeding.height}
-                onChange={(e) => setFormData({
-                  ...formData,
-                  feeding: { ...formData.feeding, height: e.target.value }
-                })}
-                style={{ width: '100px' }}
-              />
-            </div>
-            <div className="form-group">
-              <label>IMC :</label>
-              <input
-                type="text"
-                value={formData.feeding.bmi}
-                onChange={(e) => setFormData({
-                  ...formData,
-                  feeding: { ...formData.feeding, bmi: e.target.value }
-                })}
-                style={{ width: '100px' }}
-              />
-            </div>
-            <div className="form-group">
-              <label>Peso habitual:</label>
-              <input
-                type="text"
-                value={formData.feeding.usualWeight}
-                onChange={(e) => setFormData({
-                  ...formData,
-                  feeding: { ...formData.feeding, usualWeight: e.target.value }
-                })}
-                style={{ width: '100px' }}
-              />
-            </div>
-            <div className="form-group">
-              <label>% pérdida de peso:</label>
-              <input
-                type="text"
-                value={formData.feeding.weightLossPercentage}
-                onChange={(e) => setFormData({
-                  ...formData,
-                  feeding: { ...formData.feeding, weightLossPercentage: e.target.value }
-                })}
-                style={{ width: '100px' }}
-              />
+            <div className="form-row">
+              <div className="form-group">
+                <label>Peso actual:</label>
+                <input
+                  type="text"
+                  value={formData.feeding.currentWeight}
+                  onChange={(e) => setFormData({
+                    ...formData,
+                    feeding: { ...formData.feeding, currentWeight: e.target.value }
+                  })}
+                  placeholder="Peso kg"
+                  style={{ width: '100px' }}
+                />
+              </div>
+              <div className="form-group">
+                <label>Talla:</label>
+                <input
+                  type="text"
+                  value={formData.feeding.height}
+                  onChange={(e) => setFormData({
+                    ...formData,
+                    feeding: { ...formData.feeding, height: e.target.value }
+                  })}
+                  placeholder="Talla (cm)"
+                  style={{ width: '100px' }}
+                />
+              </div>
+              <div className="form-group">
+                <label>IMC:</label>
+                <input
+                  type="text"
+                  value={formData.feeding.bmi}
+                  onChange={(e) => setFormData({
+                    ...formData,
+                    feeding: { ...formData.feeding, bmi: e.target.value }
+                  })}
+                  placeholder="IMC"
+                  style={{ width: '80px' }}
+                />
+              </div>
+              <div className="form-group">
+                <label>Peso habitual:</label>
+                <input
+                  type="text"
+                  value={formData.feeding.usualWeight}
+                  onChange={(e) => setFormData({
+                    ...formData,
+                    feeding: { ...formData.feeding, usualWeight: e.target.value }
+                  })}
+                  style={{ width: '100px' }}
+                />
+              </div>
+              <div className="form-group">
+                <label>% Pérdida peso:</label>
+                <input
+                  type="text"
+                  value={formData.feeding.weightLossPercentage}
+                  onChange={(e) => setFormData({
+                    ...formData,
+                    feeding: { ...formData.feeding, weightLossPercentage: e.target.value }
+                  })}
+                  placeholder="Número"
+                  style={{ width: '80px' }}
+                />
+              </div>
             </div>
           </div>
           <div className="form-row">
@@ -533,13 +883,7 @@ const SurgicalShortForm = ({ initialData, onSave, onCancel }: SurgicalShortFormP
                 })}
                 style={{ width: '100px' }}
               />
-              <button
-                type="button"
-                className="scale-button"
-                onClick={() => {/* TODO: Abrir escala MUST */}}
-              >
-                Abrir Escala
-              </button>
+             
             </div>
           </div>
           <div className="form-row">
@@ -588,7 +932,8 @@ const SurgicalShortForm = ({ initialData, onSave, onCancel }: SurgicalShortFormP
                   ...formData,
                   feeding: { ...formData.feeding, dailyLiquidIntake: e.target.value }
                 })}
-                style={{ width: '150px' }}
+                placeholder="Texto"
+                style={{ width: '200px' }}
               />
             </div>
           </div>
@@ -745,14 +1090,54 @@ const SurgicalShortForm = ({ initialData, onSave, onCancel }: SurgicalShortFormP
           </div>
         </div>
 
-        {/* NECESIDAD DE MOVILIZACIÓN */}
-        <div className="form-section">
-          <h3>
-            NECESIDAD DE MOVILIZACIÓN
-            {formData.mobilization.autonomous && (
-              <span className="no-alteration-badge" style={{ marginLeft: '15px' }}>Autónomo</span>
-            )}
-          </h3>
+        {/* Page 1 Footer */}
+        <div className="page-footer">
+          <div className="hospital-info">
+            <p><strong>Hospital MIKS Orotálea</strong></p>
+            <p>Calle Duque de Wellington nº 35, Vitoria-Gasteiz, Araba</p>
+            <p>Tel: +34 945 252-0977/Fax: +34 945 132-7582/www.hospitalmiks.com</p>
+          </div>
+          <div className="page-number">PÁGINA: 1/2</div>
+        </div>
+
+        {/* Page Navigation */}
+        <div className="form-navigation" style={{ marginTop: '20px', marginBottom: '20px' }}>
+          <button type="button" className="cancel-button" onClick={onCancel}>
+            Cancelar
+          </button>
+          <button type="button" className="next-button" onClick={() => setCurrentPage(2)}>
+            Siguiente →
+          </button>
+        </div>
+        </>
+        )}
+
+        {/* PAGE 2 CONTENT */}
+        {currentPage === 2 && (
+          <>
+            {/* NECESIDAD DE MOVILIZACIÓN */}
+            <div className="form-section">
+          <div className="section-header-with-checkbox">
+            <h3>NECESIDAD DE MOVILIZACIÓN</h3>
+            <div className="checkbox-item inline-checkbox">
+              <input
+                type="checkbox"
+                id="mob-auto"
+                checked={formData.mobilization.autonomous}
+                onChange={(e) => setFormData({
+                  ...formData,
+                  mobilization: {
+                    ...formData.mobilization,
+                    autonomous: e.target.checked,
+                    dependent: e.target.checked ? false : formData.mobilization.dependent,
+                    needsPartialHelp: e.target.checked ? false : formData.mobilization.needsPartialHelp,
+                    needsTotalHelp: e.target.checked ? false : formData.mobilization.needsTotalHelp,
+                  }
+                })}
+              />
+              <label htmlFor="mob-auto" className="no-alteration-badge">Autónomo</label>
+            </div>
+          </div>
           <div className="checkbox-group">
             <div className="checkbox-item">
               <input
@@ -949,13 +1334,7 @@ const SurgicalShortForm = ({ initialData, onSave, onCancel }: SurgicalShortFormP
                 })}
                 style={{ width: '80px' }}
               />
-              <button
-                type="button"
-                className="scale-button"
-                onClick={() => {/* TODO: Abrir escala Downton */}}
-              >
-                Abrir Escala
-              </button>
+             
             </div>
             <div className="checkbox-item">
               <input
@@ -984,12 +1363,27 @@ const SurgicalShortForm = ({ initialData, onSave, onCancel }: SurgicalShortFormP
 
         {/* NECESIDAD DE COMUNICACIÓN */}
         <div className="form-section">
-          <h3>
-            NECESIDAD DE COMUNICACIÓN
-            {formData.communication.noAlteration && (
-              <span className="no-alteration-badge" style={{ marginLeft: '15px' }}>Sin alteración observada</span>
-            )}
-          </h3>
+          <div className="section-header-with-checkbox">
+            <h3>NECESIDAD DE COMUNICACIÓN</h3>
+            <div className="checkbox-item inline-checkbox">
+              <input
+                type="checkbox"
+                id="comm-noAlt"
+                checked={formData.communication.noAlteration}
+                onChange={(e) => setFormData({
+                  ...formData,
+                  communication: {
+                    ...formData.communication,
+                    noAlteration: e.target.checked,
+                    visionAlteration: e.target.checked ? false : formData.communication.visionAlteration,
+                    hearingAlteration: e.target.checked ? false : formData.communication.hearingAlteration,
+                    speechDifficulty: e.target.checked ? false : formData.communication.speechDifficulty,
+                  }
+                })}
+              />
+              <label htmlFor="comm-noAlt" className="no-alteration-badge">Sin alteración observada</label>
+            </div>
+          </div>
           <div className="form-row">
             <span style={{ fontWeight: '500' }}>Alteración:</span>
             <div className="checkbox-item">
@@ -1086,7 +1480,25 @@ const SurgicalShortForm = ({ initialData, onSave, onCancel }: SurgicalShortFormP
 
         {/* NECESIDAD DE CREENCIAS Y VALORES */}
         <div className="form-section">
-          <h3>NECESIDAD DE CREENCIAS Y VALORES</h3>
+          <div className="section-header-with-checkbox">
+            <h3>NECESIDAD DE CREENCIAS Y VALORES</h3>
+            <div className="checkbox-item inline-checkbox">
+              <input
+                type="checkbox"
+                id="beliefs-noAlt"
+                checked={!formData.beliefsAndValues.hasReligiousCulturalBeliefs && !formData.beliefsAndValues.advanceDirectives}
+                onChange={(e) => setFormData({
+                  ...formData,
+                  beliefsAndValues: {
+                    ...formData.beliefsAndValues,
+                    hasReligiousCulturalBeliefs: !e.target.checked && formData.beliefsAndValues.hasReligiousCulturalBeliefs,
+                    advanceDirectives: !e.target.checked && formData.beliefsAndValues.advanceDirectives,
+                  }
+                })}
+              />
+              <label htmlFor="beliefs-noAlt" className="no-alteration-badge">Sin alteración observada</label>
+            </div>
+          </div>
           <div className="form-row">
             <span style={{ fontWeight: '500' }}>¿Tiene alguna creencia religiosa o cultural que le gustaría que tuviésemos en cuenta durante su estancia?</span>
             <div className="checkbox-item">
@@ -1255,7 +1667,7 @@ const SurgicalShortForm = ({ initialData, onSave, onCancel }: SurgicalShortFormP
                 />
               </div>
               <div className="form-group inline">
-                <label>Escala utilizada para medir la intensidad :</label>
+                <label>Escala utilizada (Anexo 4):</label>
                 <input
                   type="text"
                   value={formData.comfort.painScale}
@@ -1263,15 +1675,9 @@ const SurgicalShortForm = ({ initialData, onSave, onCancel }: SurgicalShortFormP
                     ...formData,
                     comfort: { ...formData.comfort, painScale: e.target.value }
                   })}
-                  style={{ width: '200px' }}
+                  placeholder="Texto"
+                  style={{ width: '300px' }}
                 />
-                <button
-                  type="button"
-                  className="scale-button"
-                  onClick={() => {/* TODO: Abrir escala de dolor */}}
-                >
-                  Abrir Escala
-                </button>
               </div>
             </div>
           )}
@@ -1445,26 +1851,60 @@ const SurgicalShortForm = ({ initialData, onSave, onCancel }: SurgicalShortFormP
           </div>
         </div>
 
-        {/* COMENTARIOS ADICIONALES */}
-        <div className="form-section">
-          <h3>¿DESEA AÑADIR ALGO QUE NO SE HAYA HABLADO Y CONSIDERE IMPORTANTE?</h3>
-          <div className="form-group">
-            <textarea
-              value={formData.additionalComments}
-              onChange={(e) => setFormData({ ...formData, additionalComments: e.target.value })}
-              style={{ minHeight: '100px' }}
-            />
+        {/* Signature Section */}
+        <div className="signature-section">
+          <div className="signature-row">
+            <div className="signature-field">
+              <label>ENFERMERA:</label>
+              <div className="signature-value">{formData.signedBy || formData.nurse}</div>
+            </div>
+            <div className="signature-field">
+              <label>FIRMADO:</label>
+              <div className="signature-box"></div>
+            </div>
+            <div className="signature-field">
+              <label>FECHA DEL INFORME:</label>
+              <div className="signature-value">{formData.reportDate}</div>
+            </div>
+            <div className="signature-field">
+              <label>HORA INFORME:</label>
+              <div className="signature-value">{formData.reportTime}</div>
+            </div>
           </div>
         </div>
 
-        <div className="form-actions">
-          <button type="button" className="cancel-button" onClick={onCancel}>
-            Cancelar
-          </button>
-          <button type="submit" className="save-button">
-            Guardar Evaluación
-          </button>
+        {/* Page 2 Footer */}
+        <div className="page-footer">
+          <div className="hospital-info">
+            <p><strong>Hospital MIKS Orotálea</strong></p>
+            <p>Calle Duque de Wellington nº 35, Vitoria-Gasteiz, Araba</p>
+            <p>Tel: +34 945 252-0977/Fax: +34 945 132-7582/www.hospitalmiks.com</p>
+          </div>
+          <div className="page-number">PÁGINA: 2/2</div>
         </div>
+
+        {/* Page Navigation */}
+        <div className="form-navigation" style={{ marginTop: '20px' }}>
+          <button type="button" className="prev-button" onClick={() => setCurrentPage(1)}>
+            ← Anterior
+          </button>
+          <div style={{ display: 'flex', gap: '10px' }}>
+            <button type="submit" className="save-button">
+              Guardar Evaluación
+            </button>
+            <button
+              type="button"
+              className="save-button"
+              onClick={handleSaveAndPrint}
+              disabled={generatingPDF}
+              style={{ backgroundColor: '#27ae60' }}
+            >
+              {generatingPDF ? 'Generando PDF...' : 'Guardar e Imprimir'}
+            </button>
+          </div>
+        </div>
+        </>
+        )}
       </form>
     </div>
   );

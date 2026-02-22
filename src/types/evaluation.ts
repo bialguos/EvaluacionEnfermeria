@@ -15,6 +15,42 @@ export interface BaseEvaluation {
 export interface SurgicalShortEvaluation extends BaseEvaluation {
   evaluationType: 'surgical_short';
 
+  // Patient information (preloaded, readonly)
+  patientAddress: string;
+  patientNIS: string;
+  patientPhone: string;
+  patientDateOfBirth: string;
+  nurseCollegiateNumber: string;
+
+  // Evaluation metadata (preloaded)
+  evaluationDate: string;
+  evaluationTime: string;
+
+  // Vital constants (preloaded from last registered values)
+  temperature: string;
+  viaAnular: string;
+  tasSistolica: string;
+  tadDiastolica: string;
+  fc: string;
+  fr: string;
+  satO2: string;
+  aireAmb: string;
+
+  // Allergies
+  hasAllergies: boolean;
+  allergiesDetails: string;
+
+  // Personal history
+  personalHistory: string;
+
+  // Habitual medication
+  habitualMedication: string;
+
+  // Signature fields
+  signedBy: string;
+  reportDate: string;
+  reportTime: string;
+
   // Necesidad de Respiración
   respiration: {
     noAlteration: boolean;

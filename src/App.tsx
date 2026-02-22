@@ -8,6 +8,7 @@ import SurgicalShortForm from './components/SurgicalShortForm';
 import CMAEvaluationForm from './components/CMAEvaluationForm';
 import SurgicalReportsList from './components/SurgicalReportsList';
 import PatientSurgerySelectionModal from './components/PatientSurgerySelectionModal';
+import PatientNurseSelectionModal from './components/PatientNurseSelectionModal';
 import SurgicalReportForm from './components/SurgicalReportForm';
 import type { NursingEvaluation, EvaluationType, SurgicalShortEvaluation, CMAEvaluation } from './types/evaluation';
 import type { SurgicalReport } from './types/surgicalReport';
@@ -22,9 +23,12 @@ function App() {
   // Evaluations state
   const [evaluations, setEvaluations] = useState<NursingEvaluation[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isPatientNurseModalOpen, setIsPatientNurseModalOpen] = useState(false);
   const [isFormVisible, setIsFormVisible] = useState(false);
   const [selectedEvaluationType, setSelectedEvaluationType] = useState<EvaluationType | null>(null);
   const [editingEvaluation, setEditingEvaluation] = useState<NursingEvaluation | undefined>(undefined);
+  const [preloadedPatientId, setPreloadedPatientId] = useState<string | undefined>(undefined);
+  const [preloadedNurseId, setPreloadedNurseId] = useState<string | undefined>(undefined);
 
   // Surgical reports state
   const [surgicalReports, setSurgicalReports] = useState<SurgicalReport[]>([]);
@@ -69,6 +73,21 @@ function App() {
   const handleSelectEvaluationType = (type: EvaluationType) => {
     setSelectedEvaluationType(type);
     setIsModalOpen(false);
+
+    // For surgical_short, show patient/nurse selection modal first
+    if (type === 'surgical_short') {
+      setIsPatientNurseModalOpen(true);
+    } else {
+      // For other types, go directly to form
+      setEditingEvaluation(undefined);
+      setIsFormVisible(true);
+    }
+  };
+
+  const handleSelectPatientNurse = (patientId: string, nurseId: string) => {
+    setPreloadedPatientId(patientId);
+    setPreloadedNurseId(nurseId);
+    setIsPatientNurseModalOpen(false);
     setEditingEvaluation(undefined);
     setIsFormVisible(true);
   };
@@ -100,6 +119,8 @@ function App() {
     setIsFormVisible(false);
     setEditingEvaluation(undefined);
     setSelectedEvaluationType(null);
+    setPreloadedPatientId(undefined);
+    setPreloadedNurseId(undefined);
   };
 
   // Surgical reports handlers
@@ -242,6 +263,8 @@ function App() {
             initialData={editingEvaluation as SurgicalShortEvaluation | undefined}
             onSave={handleSaveEvaluation}
             onCancel={handleCancelForm}
+            preloadedPatientId={preloadedPatientId}
+            preloadedNurseId={preloadedNurseId}
           />
         );
       case 'cma':
@@ -268,9 +291,11 @@ function App() {
 
       {currentView === 'evaluations' && (
         <>
-          <button className="back-to-menu-button" onClick={() => setCurrentView('menu')}>
-            ← Volver al Menú Principal
-          </button>
+          {!isFormVisible && (
+            <button className="back-to-menu-button" onClick={() => setCurrentView('menu')}>
+              ← Volver al Menú Principal
+            </button>
+          )}
 
           {!isFormVisible && <PatientHeader />}
 
@@ -300,6 +325,12 @@ function App() {
             isOpen={isModalOpen}
             onClose={() => setIsModalOpen(false)}
             onSelect={handleSelectEvaluationType}
+          />
+
+          <PatientNurseSelectionModal
+            isOpen={isPatientNurseModalOpen}
+            onClose={() => setIsPatientNurseModalOpen(false)}
+            onSelect={handleSelectPatientNurse}
           />
         </>
       )}

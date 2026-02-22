@@ -1,4 +1,6 @@
-import type { NursingEvaluation } from '../types/evaluation';
+import { useState } from 'react';
+import type { NursingEvaluation, SurgicalShortEvaluation } from '../types/evaluation';
+import { generateAndDownloadEvaluationPDF } from '../utils/evaluationPdfGenerator';
 
 interface EvaluationsListProps {
   evaluations: NursingEvaluation[];
@@ -7,6 +9,13 @@ interface EvaluationsListProps {
 }
 
 const EvaluationsList = ({ evaluations, onEdit, onDelete }: EvaluationsListProps) => {
+  const [generatingPDF, setGeneratingPDF] = useState<string | null>(null);
+
+  const handlePrintPDF = async (evaluation: SurgicalShortEvaluation) => {
+    setGeneratingPDF(evaluation.id);
+    await generateAndDownloadEvaluationPDF(evaluation);
+    setGeneratingPDF(null);
+  };
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     return date.toLocaleDateString('es-ES', {
@@ -53,6 +62,18 @@ const EvaluationsList = ({ evaluations, onEdit, onDelete }: EvaluationsListProps
                 >
                   Editar
                 </button>
+                {evaluation.evaluationType === 'surgical_short' && (
+                  <button
+                    className="edit-button"
+                    onClick={() => handlePrintPDF(evaluation as SurgicalShortEvaluation)}
+                    disabled={generatingPDF === evaluation.id}
+                    style={{
+                      backgroundColor: '#3498db',
+                    }}
+                  >
+                    {generatingPDF === evaluation.id ? 'Generando...' : 'Imprimir PDF'}
+                  </button>
+                )}
                 <button
                   className="delete-button"
                   onClick={() => {
