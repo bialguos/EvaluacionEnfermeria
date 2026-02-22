@@ -30,6 +30,25 @@ export interface MockNurse {
 
 export const mockPatients: MockPatientForEvaluation[] = [
   {
+    id: 'pat-eval-juan',
+    nombre: 'Juan Pérez García',
+    direccion: 'Calle Portales 12, 2° A, Vitoria-Gasteiz',
+    nis: '100001',
+    telefono: '945111222',
+    fechaNacimiento: '12/05/1970',
+    alergias: 'No conocidas',
+    antecedentesPersonales: 'Sin antecedentes relevantes.',
+    medicacionHabitual: 'No toma medicación habitual',
+    temperatura: '36.5',
+    viaAnular: 'Oral',
+    tasSistolica: '120',
+    tadDiastolica: '75',
+    fc: '70',
+    fr: '15',
+    satO2: '98',
+    aireAmb: 'Aire ambiente',
+  },
+  {
     id: 'pat-eval-1',
     nombre: 'María García López',
     direccion: 'Calle Mayor 45, 3º B, Vitoria-Gasteiz',

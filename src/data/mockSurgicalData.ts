@@ -3,6 +3,21 @@ import type { MockPatient, MockSurgery, VitalConstant } from '../types/surgicalR
 // Pacientes mock
 export const mockPatients: MockPatient[] = [
   {
+    id: 'patient-juan',
+    nombre: 'Pérez García, Juan',
+    direccion: 'Calle Portales 12, 2° A, Madrid',
+    nis: '100001',
+    telefono: '912111222',
+    fechaNacimiento: '1970-05-12',
+    alergias: 'Sin alergias conocidas',
+    medicacionHabitual: 'No toma medicación habitual',
+    ppcc: 'Sin antecedentes relevantes',
+    taS: 120,
+    taD: 75,
+    fc: 70,
+    enfermeraPlanta: 'Miren Sánchez'
+  },
+  {
     id: 'patient-001',
     nombre: 'García López, María',
     direccion: 'Calle Mayor 45, 3°B, Madrid',
@@ -66,6 +81,24 @@ export const mockPatients: MockPatient[] = [
 
 // Cirugías mock
 export const mockSurgeries: MockSurgery[] = [
+  {
+    id: 'surgery-juan',
+    patientId: 'patient-juan',
+    intervencion: 'Herniorrafia umbilical',
+    lateralidad: 'No aplica',
+    cirujano: 'Dr. Antonio López Ruiz',
+    anestesista: 'Dra. María González Torres',
+    tipoAnestesia: 'General balanceada',
+    fechaEntradaQuirofano: '2026-02-22T08:00',
+    fechaSalidaQuirofano: '2026-02-22T09:30',
+    enfermeraQuirofano: 'Beatriz Sánchez López',
+    medicacionQuirofano: 'Propofol 150mg, Fentanilo 100mcg, Paracetamol 1g IV',
+    anestesistaUrpa: 'Dra. María González Torres',
+    enfermeraUrpa: 'Miren Sánchez',
+    medicacionPreUrpa: 'Metoclopramida 10mg IV',
+    fechaEntradaUrpa: '2026-02-22T09:30',
+    fechaSalidaUrpa: '2026-02-22T11:30'
+  },
   {
     id: 'surgery-001',
     patientId: 'patient-001',

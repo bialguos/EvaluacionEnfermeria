@@ -7,12 +7,11 @@ import EvaluationTypeModal from './components/EvaluationTypeModal';
 import SurgicalShortForm from './components/SurgicalShortForm';
 import CMAEvaluationForm from './components/CMAEvaluationForm';
 import SurgicalReportsList from './components/SurgicalReportsList';
-import PatientSurgerySelectionModal from './components/PatientSurgerySelectionModal';
-import PatientNurseSelectionModal from './components/PatientNurseSelectionModal';
 import SurgicalReportForm from './components/SurgicalReportForm';
 import type { NursingEvaluation, EvaluationType, SurgicalShortEvaluation, CMAEvaluation } from './types/evaluation';
 import type { SurgicalReport } from './types/surgicalReport';
-import { getPatientById, getSurgeryById, mockVitalConstants } from './data/mockSurgicalData';
+import { getPatientById, getSurgeryById, mockVitalConstants, mockPatients as mockSurgicalPatients, mockSurgeries } from './data/mockSurgicalData';
+import { mockPatients as mockEvalPatients, mockNurses } from './data/mockEvaluationData';
 
 type AppView = 'menu' | 'evaluations' | 'surgical-reports';
 
@@ -23,7 +22,6 @@ function App() {
   // Evaluations state
   const [evaluations, setEvaluations] = useState<NursingEvaluation[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isPatientNurseModalOpen, setIsPatientNurseModalOpen] = useState(false);
   const [isFormVisible, setIsFormVisible] = useState(false);
   const [selectedEvaluationType, setSelectedEvaluationType] = useState<EvaluationType | null>(null);
   const [editingEvaluation, setEditingEvaluation] = useState<NursingEvaluation | undefined>(undefined);
@@ -32,7 +30,6 @@ function App() {
 
   // Surgical reports state
   const [surgicalReports, setSurgicalReports] = useState<SurgicalReport[]>([]);
-  const [isPatientModalOpen, setIsPatientModalOpen] = useState(false);
   const [isSurgicalFormVisible, setIsSurgicalFormVisible] = useState(false);
   const [editingSurgicalReport, setEditingSurgicalReport] = useState<SurgicalReport | undefined>(undefined);
 
@@ -74,22 +71,16 @@ function App() {
     setSelectedEvaluationType(type);
     setIsModalOpen(false);
 
-    // For surgical_short, show patient/nurse selection modal first
     if (type === 'surgical_short') {
-      setIsPatientNurseModalOpen(true);
+      // Auto-seleccionar primer paciente y primera enfermera sin mostrar modal
+      setPreloadedPatientId(mockEvalPatients[0].id);
+      setPreloadedNurseId(mockNurses[0].id);
+      setEditingEvaluation(undefined);
+      setIsFormVisible(true);
     } else {
-      // For other types, go directly to form
       setEditingEvaluation(undefined);
       setIsFormVisible(true);
     }
-  };
-
-  const handleSelectPatientNurse = (patientId: string, nurseId: string) => {
-    setPreloadedPatientId(patientId);
-    setPreloadedNurseId(nurseId);
-    setIsPatientNurseModalOpen(false);
-    setEditingEvaluation(undefined);
-    setIsFormVisible(true);
   };
 
   const handleEditEvaluation = (evaluation: NursingEvaluation) => {
@@ -125,7 +116,8 @@ function App() {
 
   // Surgical reports handlers
   const handleNewSurgicalReport = () => {
-    setIsPatientModalOpen(true);
+    // Auto-seleccionar primer paciente y primera cirugía sin mostrar modal
+    handleSelectPatientSurgery(mockSurgicalPatients[0].id, mockSurgeries[0].id);
   };
 
   const handleSelectPatientSurgery = (patientId: string, surgeryId: string) => {
@@ -221,7 +213,6 @@ function App() {
 
     setEditingSurgicalReport(newReport);
     setIsSurgicalFormVisible(true);
-    setIsPatientModalOpen(false);
   };
 
   const handleEditSurgicalReport = (report: SurgicalReport) => {
@@ -326,12 +317,6 @@ function App() {
             onClose={() => setIsModalOpen(false)}
             onSelect={handleSelectEvaluationType}
           />
-
-          <PatientNurseSelectionModal
-            isOpen={isPatientNurseModalOpen}
-            onClose={() => setIsPatientNurseModalOpen(false)}
-            onSelect={handleSelectPatientNurse}
-          />
         </>
       )}
 
@@ -367,11 +352,6 @@ function App() {
             )}
           </main>
 
-          <PatientSurgerySelectionModal
-            isOpen={isPatientModalOpen}
-            onClose={() => setIsPatientModalOpen(false)}
-            onSelect={handleSelectPatientSurgery}
-          />
         </>
       )}
     </div>
