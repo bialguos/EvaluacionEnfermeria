@@ -9,8 +9,12 @@ lerna-debug.log*
 
 # Dependencies
 node_modules
+dist
 dist-ssr
 *.local
+
+# Vite cache
+.vite
 
 # Editor directories and files
 .vscode/*
