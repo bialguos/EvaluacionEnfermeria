@@ -85,21 +85,32 @@ export interface SurgicalReport {
   medicacionPreUrpa: string;
 
   // Checkboxes editables - Página 1
-  retiradaDispositivos: boolean;
-  retiradaDentadura: boolean;
-  rasuradoZona: boolean;
+  retiradaDispositivos: boolean;  // SI para "Retirada dispositivos/dentadura"
+  retiradaDentadura: boolean;     // NO para "Retirada dispositivos/dentadura"
+  rasuradoZona: boolean;          // SI
+  rasuradoZonaNo: boolean;        // NO
+  rasuradoZonaNp: boolean;        // N/P
 
   pruebasEcg: boolean;
   pruebasRx: boolean;
   pruebasAs: boolean;
   pruebasInfExterno: boolean;
 
-  verificacionCirujano: boolean;
-  verificacionAnestesista: boolean;
+  verificacionCirujano: boolean;     // SI Cirujano
+  verificacionCirujanoNo: boolean;   // NO Cirujano
+  verificacionAnestesista: boolean;  // SI Anestesista
+  verificacionAnestesistaNo: boolean; // NO Anestesista
 
-  marcaje: boolean;
-  pruebasCruzadas: boolean;
-  transfusion: boolean;
+  marcaje: boolean;           // SI
+  marcajeNo: boolean;         // NO
+  marcajeNp: boolean;         // N/P
+  pruebasCruzadas: boolean;   // SI
+  pruebasCruzadasNo: boolean; // NO
+  pruebasCruzadasNp: boolean; // N/P
+  uReservadas: string;
+  transfusion: boolean;       // SI
+  transfusionNo: boolean;     // NO
+  transfusionNp: boolean;     // N/P
 
   // Quirófano (readonly)
   cirujano: string;
