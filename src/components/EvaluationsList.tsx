@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import type { NursingEvaluation, SurgicalShortEvaluation } from '../types/evaluation';
-import { generateAndDownloadEvaluationPDF } from '../utils/evaluationPdfGenerator';
+import type { NursingEvaluation, SurgicalShortEvaluation, AdultPatientEvaluation } from '../types/evaluation';
+import { generateAndDownloadEvaluationPDF, generateAndDownloadAdultPatientPDF } from '../utils/evaluationPdfGenerator';
 
 interface EvaluationsListProps {
   evaluations: NursingEvaluation[];
@@ -67,9 +67,21 @@ const EvaluationsList = ({ evaluations, onEdit, onDelete }: EvaluationsListProps
                     className="edit-button"
                     onClick={() => handlePrintPDF(evaluation as SurgicalShortEvaluation)}
                     disabled={generatingPDF === evaluation.id}
-                    style={{
-                      backgroundColor: '#3498db',
+                    style={{ backgroundColor: '#3498db' }}
+                  >
+                    {generatingPDF === evaluation.id ? 'Generando...' : 'Imprimir PDF'}
+                  </button>
+                )}
+                {evaluation.evaluationType === 'adult_patient' && (
+                  <button
+                    className="edit-button"
+                    onClick={async () => {
+                      setGeneratingPDF(evaluation.id);
+                      await generateAndDownloadAdultPatientPDF(evaluation as AdultPatientEvaluation);
+                      setGeneratingPDF(null);
                     }}
+                    disabled={generatingPDF === evaluation.id}
+                    style={{ backgroundColor: '#3498db' }}
                   >
                     {generatingPDF === evaluation.id ? 'Generando...' : 'Imprimir PDF'}
                   </button>

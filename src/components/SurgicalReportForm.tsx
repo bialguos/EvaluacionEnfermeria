@@ -51,15 +51,26 @@ const SurgicalReportForm: React.FC<SurgicalReportFormProps> = ({
       retiradaDispositivos: false,
       retiradaDentadura: false,
       rasuradoZona: false,
+      rasuradoZonaNo: false,
+      rasuradoZonaNp: false,
       pruebasEcg: false,
       pruebasRx: false,
       pruebasAs: false,
       pruebasInfExterno: false,
       verificacionCirujano: false,
+      verificacionCirujanoNo: false,
       verificacionAnestesista: false,
+      verificacionAnestesistaNo: false,
       marcaje: false,
+      marcajeNo: false,
+      marcajeNp: false,
       pruebasCruzadas: false,
+      pruebasCruzadasNo: false,
+      pruebasCruzadasNp: false,
+      uReservadas: '',
       transfusion: false,
+      transfusionNo: false,
+      transfusionNp: false,
       cirujano: '',
       anestesista: '',
       tipoAnestesia: '',
@@ -92,13 +103,6 @@ const SurgicalReportForm: React.FC<SurgicalReportFormProps> = ({
       setFormData(initialData);
     }
   }, [initialData]);
-
-  const handleCheckboxChange = (field: string, value: boolean) => {
-    setFormData(prev => ({
-      ...prev,
-      [field]: value
-    }));
-  };
 
   const handleFieldChange = (field: string, value: any) => {
     setFormData(prev => ({
@@ -226,6 +230,7 @@ const SurgicalReportForm: React.FC<SurgicalReportFormProps> = ({
             taD={formData.taD}
             fc={formData.fc}
             enfermeraPlanta={formData.enfermeraPlanta}
+            onChange={handleFieldChange}
           />
 
           <PreUrpaSection
@@ -233,22 +238,39 @@ const SurgicalReportForm: React.FC<SurgicalReportFormProps> = ({
             lateralidad={formData.lateralidad}
             enfermeraUrpa={formData.enfermeraUrpa}
             medicacionPreUrpa={formData.medicacionPreUrpa}
+            fechaEntradaUrpa={formData.fechaEntradaUrpa}
+            fechaSalidaUrpa={formData.fechaSalidaUrpa}
+            onChangeEnfermera={(value) => handleFieldChange('enfermeraUrpa', value)}
+            onChangeMedicacion={(value) => handleFieldChange('medicacionPreUrpa', value)}
+            onChangeFechaEntrada={(value) => handleFieldChange('fechaEntradaUrpa', value)}
+            onChangeFechaSalida={(value) => handleFieldChange('fechaSalidaUrpa', value)}
           />
 
           <EditableSections
             retiradaDispositivos={formData.retiradaDispositivos}
             retiradaDentadura={formData.retiradaDentadura}
             rasuradoZona={formData.rasuradoZona}
+            rasuradoZonaNo={formData.rasuradoZonaNo}
+            rasuradoZonaNp={formData.rasuradoZonaNp}
             pruebasEcg={formData.pruebasEcg}
             pruebasRx={formData.pruebasRx}
             pruebasAs={formData.pruebasAs}
             pruebasInfExterno={formData.pruebasInfExterno}
             verificacionCirujano={formData.verificacionCirujano}
+            verificacionCirujanoNo={formData.verificacionCirujanoNo}
             verificacionAnestesista={formData.verificacionAnestesista}
+            verificacionAnestesistaNo={formData.verificacionAnestesistaNo}
             marcaje={formData.marcaje}
+            marcajeNo={formData.marcajeNo}
+            marcajeNp={formData.marcajeNp}
             pruebasCruzadas={formData.pruebasCruzadas}
+            pruebasCruzadasNo={formData.pruebasCruzadasNo}
+            pruebasCruzadasNp={formData.pruebasCruzadasNp}
+            uReservadas={formData.uReservadas}
             transfusion={formData.transfusion}
-            onChange={handleCheckboxChange}
+            transfusionNo={formData.transfusionNo}
+            transfusionNp={formData.transfusionNp}
+            onChange={handleFieldChange}
           />
 
           <QuirofanoSection
@@ -259,6 +281,8 @@ const SurgicalReportForm: React.FC<SurgicalReportFormProps> = ({
             fechaSalidaQuirofano={formData.fechaSalidaQuirofano}
             enfermeraQuirofano={formData.enfermeraQuirofano}
             medicacionQuirofano={formData.medicacionQuirofano}
+            onChangeFechaEntrada={(value) => handleFieldChange('fechaEntradaQuirofano', value)}
+            onChangeFechaSalida={(value) => handleFieldChange('fechaSalidaQuirofano', value)}
             onChangeMedicacion={(value) => handleFieldChange('medicacionQuirofano', value)}
           />
 

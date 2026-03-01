@@ -8,6 +8,8 @@ interface QuirofanoSectionProps {
   fechaSalidaQuirofano: string;
   enfermeraQuirofano: string;
   medicacionQuirofano: string;
+  onChangeFechaEntrada: (value: string) => void;
+  onChangeFechaSalida: (value: string) => void;
   onChangeMedicacion: (value: string) => void;
 }
 
@@ -19,20 +21,10 @@ const QuirofanoSection: React.FC<QuirofanoSectionProps> = ({
   fechaSalidaQuirofano,
   enfermeraQuirofano,
   medicacionQuirofano,
+  onChangeFechaEntrada,
+  onChangeFechaSalida,
   onChangeMedicacion
 }) => {
-  const formatDateTime = (dateString: string) => {
-    if (!dateString) return '';
-    const date = new Date(dateString);
-    return date.toLocaleString('es-ES', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
-  };
-
   return (
     <div className="form-section">
       <h3>QUIRÓFANO</h3>
@@ -73,22 +65,22 @@ const QuirofanoSection: React.FC<QuirofanoSectionProps> = ({
 
       <div className="form-row">
         <div className="form-group" style={{ flex: 1 }}>
-          <label>Fecha y Hora Entrada Quirófano</label>
+          <label>Fecha/hora de entrada *</label>
           <input
-            type="text"
-            value={formatDateTime(fechaEntradaQuirofano)}
-            readOnly
-            className="info-field readonly"
+            type="datetime-local"
+            value={fechaEntradaQuirofano}
+            onChange={(e) => onChangeFechaEntrada(e.target.value)}
+            style={{ backgroundColor: '#fff9e6', padding: '8px 12px', border: '1px solid #ddd', borderRadius: '4px', fontSize: '1em' }}
           />
         </div>
 
         <div className="form-group" style={{ flex: 1 }}>
-          <label>Fecha y Hora Salida Quirófano</label>
+          <label>Fecha/hora de salida *</label>
           <input
-            type="text"
-            value={formatDateTime(fechaSalidaQuirofano)}
-            readOnly
-            className="info-field readonly"
+            type="datetime-local"
+            value={fechaSalidaQuirofano}
+            onChange={(e) => onChangeFechaSalida(e.target.value)}
+            style={{ backgroundColor: '#fff9e6', padding: '8px 12px', border: '1px solid #ddd', borderRadius: '4px', fontSize: '1em' }}
           />
         </div>
       </div>
@@ -119,7 +111,7 @@ const QuirofanoSection: React.FC<QuirofanoSectionProps> = ({
       </div>
 
       <p style={{ fontSize: '0.85em', color: '#666', fontStyle: 'italic', margin: '5px 0 0 0' }}>
-        * Campo editable
+        * Campos editables
       </p>
     </div>
   );

@@ -14,6 +14,23 @@ const getEmptyEvaluation = (): Omit<CMAEvaluation, 'id' | 'date'> => ({
   evaluationName: 'Evaluación de Enfermería Cirugía Mayor Ambulatoria',
   nurse: 'María García López',
   patientName: 'Juan Pérez',
+  // Datos del registro
+  registrationDate: new Date().toISOString().slice(0, 10),
+  collegiateNumber: '',
+  intervencion: '',
+  lateralidad: '',
+  noAllergies: true,
+  hasAllergies: false,
+  allergiesDetails: '',
+  patientAccompanied: false,
+  // Signos vitales
+  tasSistolica: '',
+  tadDiastolica: '',
+  satO2: '',
+  temperatura: '',
+  glucemia: '',
+  fc: '',
+  fr: '',
   habitualMedication: '',
   respiration: {
     noAlteration: true,
@@ -154,32 +171,207 @@ const CMAEvaluationForm = ({ initialData, onSave, onCancel }: CMAEvaluationFormP
           <h2>Evaluación de Enfermería Cirugía Mayor Ambulatoria</h2>
         </div>
 
-        {/* Datos de la enfermera */}
-        <div className="form-section">
-          <h3>Datos del Registro</h3>
-          <div className="form-row">
-            <div className="form-group">
-              <label>Enfermera que realiza la evaluación:</label>
+        {/* Datos del Registro */}
+        <div className="form-section" style={{ border: '1px solid #ccc', backgroundColor: 'white', padding: '12px' }}>
+          <h3 style={{ marginTop: 0, marginBottom: '10px', fontSize: '1em', borderBottom: '1px solid #ccc', paddingBottom: '6px' }}>
+            Datos del Registro
+          </h3>
+
+          {/* Fila 1: DUE / Fecha / Nº Col. */}
+          <div className="form-row" style={{ gap: '10px', marginBottom: '8px', alignItems: 'flex-end' }}>
+            <div className="form-group" style={{ flex: 2 }}>
+              <label style={{ fontWeight: 600, fontSize: '0.9em' }}>DUE:</label>
               <input
                 type="text"
                 value={formData.nurse}
                 onChange={(e) => setFormData({ ...formData, nurse: e.target.value })}
-                placeholder="Nombre de la enfermera"
-                style={{ width: '300px' }}
+                style={{ width: '100%', padding: '4px 8px', border: '1px solid #ccc', borderRadius: '3px' }}
+              />
+            </div>
+            <div className="form-group" style={{ flex: 1 }}>
+              <label style={{ fontWeight: 600, fontSize: '0.9em' }}>Fecha:</label>
+              <input
+                type="date"
+                value={formData.registrationDate}
+                onChange={(e) => setFormData({ ...formData, registrationDate: e.target.value })}
+                style={{ width: '100%', padding: '4px 8px', border: '1px solid #ccc', borderRadius: '3px' }}
+              />
+            </div>
+            <div className="form-group" style={{ flex: '0 0 120px' }}>
+              <label style={{ fontWeight: 600, fontSize: '0.9em' }}>Nº Col.:</label>
+              <input
+                type="text"
+                value={formData.collegiateNumber}
+                onChange={(e) => setFormData({ ...formData, collegiateNumber: e.target.value })}
+                style={{ width: '100%', padding: '4px 8px', border: '1px solid #ccc', borderRadius: '3px' }}
               />
             </div>
           </div>
-        </div>
 
-        {/* MEDICACIÓN HABITUAL */}
-        <div className="form-section">
-          <h3>MEDICACIÓN HABITUAL (INDICAR ÚLTIMA TOMA CUANDO CORRESPONDA)</h3>
-          <div className="form-group">
+          {/* Fila 2: Intervención */}
+          <div className="form-row" style={{ marginBottom: '8px' }}>
+            <div className="form-group" style={{ flex: 1 }}>
+              <label style={{ fontWeight: 600, fontSize: '0.9em' }}>Intervención:</label>
+              <input
+                type="text"
+                value={formData.intervencion}
+                onChange={(e) => setFormData({ ...formData, intervencion: e.target.value })}
+                style={{ width: '100%', padding: '4px 8px', border: '1px solid #ccc', borderRadius: '3px' }}
+              />
+            </div>
+          </div>
+
+          {/* Fila 3: Lateralidad */}
+          <div className="form-row" style={{ marginBottom: '8px' }}>
+            <div className="form-group" style={{ flex: 1 }}>
+              <label style={{ fontWeight: 600, fontSize: '0.9em' }}>Lateralidad:</label>
+              <input
+                type="text"
+                value={formData.lateralidad}
+                onChange={(e) => setFormData({ ...formData, lateralidad: e.target.value })}
+                style={{ width: '100%', padding: '4px 8px', border: '1px solid #ccc', borderRadius: '3px' }}
+              />
+            </div>
+          </div>
+
+          {/* Fila 4: Alergias */}
+          <div className="form-row" style={{ marginBottom: '8px', alignItems: 'center', gap: '10px' }}>
+            <span style={{ fontWeight: 600, fontSize: '0.9em' }}>Alergias</span>
+            <label style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.9em', cursor: 'pointer' }}>
+              <input
+                type="checkbox"
+                checked={formData.noAllergies}
+                onChange={(e) => setFormData({ ...formData, noAllergies: e.target.checked, hasAllergies: e.target.checked ? false : formData.hasAllergies })}
+              />
+              No
+            </label>
+            <label style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.9em', cursor: 'pointer' }}>
+              <input
+                type="checkbox"
+                checked={formData.hasAllergies}
+                onChange={(e) => setFormData({ ...formData, hasAllergies: e.target.checked, noAllergies: e.target.checked ? false : formData.noAllergies })}
+              />
+              Si
+            </label>
+            <span style={{ fontWeight: 600, fontSize: '0.9em', marginLeft: '8px' }}>Especificar alergias:</span>
+            <input
+              type="text"
+              value={formData.allergiesDetails}
+              onChange={(e) => setFormData({ ...formData, allergiesDetails: e.target.value })}
+              style={{ flex: 1, padding: '4px 8px', border: '1px solid #ccc', borderRadius: '3px' }}
+            />
+          </div>
+
+          {/* Fila 5: El paciente viene acompañado */}
+          <div className="form-row" style={{ marginBottom: '8px', alignItems: 'center', gap: '10px' }}>
+            <span style={{ fontWeight: 600, fontSize: '0.9em' }}>El paciente viene acompañado:</span>
+            <label style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.9em', cursor: 'pointer' }}>
+              <input
+                type="radio"
+                name="accompanied"
+                checked={formData.patientAccompanied}
+                onChange={() => setFormData({ ...formData, patientAccompanied: true })}
+              />
+              Si
+            </label>
+            <label style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.9em', cursor: 'pointer' }}>
+              <input
+                type="radio"
+                name="accompanied"
+                checked={!formData.patientAccompanied}
+                onChange={() => setFormData({ ...formData, patientAccompanied: false })}
+              />
+              No
+            </label>
+          </div>
+
+          {/* Fila 6: Signos vitales - TA, Sat O2, Temperatura */}
+          <div className="form-row" style={{ marginBottom: '4px', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+            <span style={{ fontWeight: 600, fontSize: '0.9em' }}>Signos vitales</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+              <span style={{ fontSize: '0.9em', fontWeight: 500 }}>TA:</span>
+              <input
+                type="text"
+                value={formData.tasSistolica}
+                onChange={(e) => setFormData({ ...formData, tasSistolica: e.target.value })}
+                style={{ width: '55px', padding: '3px 6px', border: '1px solid #ccc', borderRadius: '3px', textAlign: 'center' }}
+                placeholder="sys"
+              />
+              <span>/</span>
+              <input
+                type="text"
+                value={formData.tadDiastolica}
+                onChange={(e) => setFormData({ ...formData, tadDiastolica: e.target.value })}
+                style={{ width: '55px', padding: '3px 6px', border: '1px solid #ccc', borderRadius: '3px', textAlign: 'center' }}
+                placeholder="dia"
+              />
+              <span style={{ fontSize: '0.8em', color: '#666' }}>mmHg</span>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+              <span style={{ fontSize: '0.9em', fontWeight: 500 }}>Sat O₂:</span>
+              <input
+                type="text"
+                value={formData.satO2}
+                onChange={(e) => setFormData({ ...formData, satO2: e.target.value })}
+                style={{ width: '55px', padding: '3px 6px', border: '1px solid #ccc', borderRadius: '3px', textAlign: 'center' }}
+              />
+              <span style={{ fontSize: '0.8em', color: '#666' }}>%</span>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+              <span style={{ fontSize: '0.9em', fontWeight: 500 }}>Temperatura:</span>
+              <input
+                type="text"
+                value={formData.temperatura}
+                onChange={(e) => setFormData({ ...formData, temperatura: e.target.value })}
+                style={{ width: '60px', padding: '3px 6px', border: '1px solid #ccc', borderRadius: '3px', textAlign: 'center' }}
+              />
+              <span style={{ fontSize: '0.8em', color: '#666' }}>ºC</span>
+            </div>
+          </div>
+
+          {/* Fila 7: Glucemia, FC, FR */}
+          <div className="form-row" style={{ marginBottom: '10px', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+              <span style={{ fontSize: '0.9em', fontWeight: 500 }}>Glucemia:</span>
+              <input
+                type="text"
+                value={formData.glucemia}
+                onChange={(e) => setFormData({ ...formData, glucemia: e.target.value })}
+                style={{ width: '70px', padding: '3px 6px', border: '1px solid #ccc', borderRadius: '3px', textAlign: 'center' }}
+              />
+              <span style={{ fontSize: '0.8em', color: '#666' }}>mg/dl</span>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+              <span style={{ fontSize: '0.9em', fontWeight: 500 }}>FC:</span>
+              <input
+                type="text"
+                value={formData.fc}
+                onChange={(e) => setFormData({ ...formData, fc: e.target.value })}
+                style={{ width: '60px', padding: '3px 6px', border: '1px solid #ccc', borderRadius: '3px', textAlign: 'center' }}
+              />
+              <span style={{ fontSize: '0.8em', color: '#666' }}>latidos</span>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+              <span style={{ fontSize: '0.9em', fontWeight: 500 }}>FR:</span>
+              <input
+                type="text"
+                value={formData.fr}
+                onChange={(e) => setFormData({ ...formData, fr: e.target.value })}
+                style={{ width: '60px', padding: '3px 6px', border: '1px solid #ccc', borderRadius: '3px', textAlign: 'center' }}
+              />
+              <span style={{ fontSize: '0.8em', color: '#666' }}>Respiraciones/minuto</span>
+            </div>
+          </div>
+
+          {/* Medicación habitual */}
+          <div style={{ borderTop: '1px solid #ccc', paddingTop: '8px' }}>
+            <label style={{ fontWeight: 700, fontSize: '0.9em', display: 'block', marginBottom: '6px' }}>
+              MEDICACIÓN HABITUAL (INDICAR ÚLTIMA TOMA CUANDO CORRESPONDA)
+            </label>
             <textarea
               value={formData.habitualMedication}
               onChange={(e) => setFormData({ ...formData, habitualMedication: e.target.value })}
-              placeholder="Indique la medicación habitual del paciente..."
-              style={{ minHeight: '100px' }}
+              style={{ width: '100%', minHeight: '80px', padding: '6px', border: '1px solid #ccc', borderRadius: '3px', resize: 'vertical', boxSizing: 'border-box' }}
             />
           </div>
         </div>

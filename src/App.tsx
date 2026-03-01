@@ -6,9 +6,10 @@ import EvaluationsList from './components/EvaluationsList';
 import EvaluationTypeModal from './components/EvaluationTypeModal';
 import SurgicalShortForm from './components/SurgicalShortForm';
 import CMAEvaluationForm from './components/CMAEvaluationForm';
+import AdultPatientEvaluationForm from './components/AdultPatientEvaluationForm';
 import SurgicalReportsList from './components/SurgicalReportsList';
 import SurgicalReportForm from './components/SurgicalReportForm';
-import type { NursingEvaluation, EvaluationType, SurgicalShortEvaluation, CMAEvaluation } from './types/evaluation';
+import type { NursingEvaluation, EvaluationType, SurgicalShortEvaluation, CMAEvaluation, AdultPatientEvaluation } from './types/evaluation';
 import type { SurgicalReport } from './types/surgicalReport';
 import { getPatientById, getSurgeryById, mockVitalConstants, mockPatients as mockSurgicalPatients, mockSurgeries } from './data/mockSurgicalData';
 import { mockPatients as mockEvalPatients, mockNurses } from './data/mockEvaluationData';
@@ -71,7 +72,7 @@ function App() {
     setSelectedEvaluationType(type);
     setIsModalOpen(false);
 
-    if (type === 'surgical_short') {
+    if (type === 'surgical_short' || type === 'adult_patient') {
       // Auto-seleccionar primer paciente y primera enfermera sin mostrar modal
       setPreloadedPatientId(mockEvalPatients[0].id);
       setPreloadedNurseId(mockNurses[0].id);
@@ -160,15 +161,26 @@ function App() {
       retiradaDispositivos: false,
       retiradaDentadura: false,
       rasuradoZona: false,
+      rasuradoZonaNo: false,
+      rasuradoZonaNp: false,
       pruebasEcg: false,
       pruebasRx: false,
       pruebasAs: false,
       pruebasInfExterno: false,
       verificacionCirujano: false,
+      verificacionCirujanoNo: false,
       verificacionAnestesista: false,
+      verificacionAnestesistaNo: false,
       marcaje: false,
+      marcajeNo: false,
+      marcajeNp: false,
       pruebasCruzadas: false,
+      pruebasCruzadasNo: false,
+      pruebasCruzadasNp: false,
+      uReservadas: '',
       transfusion: false,
+      transfusionNo: false,
+      transfusionNp: false,
 
       // Quirófano
       cirujano: surgery.cirujano,
@@ -264,6 +276,16 @@ function App() {
             initialData={editingEvaluation as CMAEvaluation | undefined}
             onSave={handleSaveEvaluation}
             onCancel={handleCancelForm}
+          />
+        );
+      case 'adult_patient':
+        return (
+          <AdultPatientEvaluationForm
+            initialData={editingEvaluation as AdultPatientEvaluation | undefined}
+            onSave={handleSaveEvaluation}
+            onCancel={handleCancelForm}
+            preloadedPatientId={preloadedPatientId}
+            preloadedNurseId={preloadedNurseId}
           />
         );
       default:

@@ -39,6 +39,10 @@ const getEmptyEvaluation = (): Omit<SurgicalShortEvaluation, 'id' | 'date'> => (
   satO2: '',
   aireAmb: 'Aire ambiente',
 
+  // Intervención y lateralidad
+  intervencion: '',
+  lateralidad: '',
+
   // Allergies
   hasAllergies: false,
   allergiesDetails: '',
@@ -348,8 +352,8 @@ const SurgicalShortForm = ({ initialData, onSave, onCancel, preloadedPatientId, 
             <input
               type="text"
               value={formData.nurse}
-              readOnly
-              className="info-field readonly"
+              onChange={(e) => setFormData({ ...formData, nurse: e.target.value })}
+              style={{ backgroundColor: '#fff9e6', padding: '8px 12px', border: '1px solid #ddd', borderRadius: '4px', fontSize: '1em', width: '100%' }}
             />
           </div>
           <div className="form-group" style={{ flex: 1 }}>
@@ -357,8 +361,32 @@ const SurgicalShortForm = ({ initialData, onSave, onCancel, preloadedPatientId, 
             <input
               type="text"
               value={formData.nurseCollegiateNumber}
-              readOnly
-              className="info-field readonly"
+              onChange={(e) => setFormData({ ...formData, nurseCollegiateNumber: e.target.value })}
+              style={{ backgroundColor: '#fff9e6', padding: '8px 12px', border: '1px solid #ddd', borderRadius: '4px', fontSize: '1em', width: '100%' }}
+            />
+          </div>
+        </div>
+
+        {/* Intervención y Lateralidad */}
+        <div className="form-row" style={{ marginBottom: '10px' }}>
+          <div className="form-group" style={{ flex: 1 }}>
+            <label>Intervención:</label>
+            <input
+              type="text"
+              value={formData.intervencion}
+              onChange={(e) => setFormData({ ...formData, intervencion: e.target.value })}
+              style={{ backgroundColor: '#fff9e6', padding: '8px 12px', border: '1px solid #ddd', borderRadius: '4px', fontSize: '1em', width: '100%' }}
+            />
+          </div>
+        </div>
+        <div className="form-row" style={{ marginBottom: '15px' }}>
+          <div className="form-group" style={{ flex: 1 }}>
+            <label>Lateralidad:</label>
+            <input
+              type="text"
+              value={formData.lateralidad}
+              onChange={(e) => setFormData({ ...formData, lateralidad: e.target.value })}
+              style={{ backgroundColor: '#fff9e6', padding: '8px 12px', border: '1px solid #ddd', borderRadius: '4px', fontSize: '1em', width: '100%' }}
             />
           </div>
         </div>
@@ -472,8 +500,8 @@ const SurgicalShortForm = ({ initialData, onSave, onCancel, preloadedPatientId, 
             <input
               type="text"
               value={formData.allergiesDetails}
-              readOnly
-              className="info-field readonly"
+              onChange={(e) => setFormData({ ...formData, allergiesDetails: e.target.value })}
+              style={{ backgroundColor: '#fff9e6', padding: '8px 12px', border: '1px solid #ddd', borderRadius: '4px', fontSize: '1em', width: '100%' }}
             />
           </div>
         </div>
@@ -486,10 +514,9 @@ const SurgicalShortForm = ({ initialData, onSave, onCancel, preloadedPatientId, 
               <h3>Antecedentes personales:</h3>
               <textarea
                 value={formData.personalHistory}
-                readOnly
-                className="info-field readonly"
+                onChange={(e) => setFormData({ ...formData, personalHistory: e.target.value })}
                 rows={3}
-                style={{ width: '100%', resize: 'vertical' }}
+                style={{ width: '100%', resize: 'vertical', backgroundColor: '#fff9e6', padding: '8px 12px', border: '1px solid #ddd', borderRadius: '4px', fontSize: '1em', boxSizing: 'border-box' }}
               />
             </div>
 
@@ -498,10 +525,9 @@ const SurgicalShortForm = ({ initialData, onSave, onCancel, preloadedPatientId, 
               <h3>Medicación habitual:</h3>
               <textarea
                 value={formData.habitualMedication}
-                readOnly
-                className="info-field readonly"
+                onChange={(e) => setFormData({ ...formData, habitualMedication: e.target.value })}
                 rows={3}
-                style={{ width: '100%', resize: 'vertical' }}
+                style={{ width: '100%', resize: 'vertical', backgroundColor: '#fff9e6', padding: '8px 12px', border: '1px solid #ddd', borderRadius: '4px', fontSize: '1em', boxSizing: 'border-box' }}
               />
             </div>
 

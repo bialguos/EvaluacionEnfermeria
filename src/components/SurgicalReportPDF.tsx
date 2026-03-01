@@ -303,99 +303,154 @@ const SurgicalReportPDF: React.FC<SurgicalReportPDFProps> = ({ report }) => {
         <View style={styles.blueSection}>
           <Text style={styles.sectionTitle}>PRE-URPA</Text>
           <View style={styles.row}>
-            <View style={{ flex: 2, marginRight: 10 }}>
+            <View style={{ flex: 1, marginRight: 10 }}>
               <Text style={styles.label}>Intervención</Text>
               <Text style={styles.value}>{report.intervencion}</Text>
-            </View>
-            <View style={{ flex: 1 }}>
-              <Text style={styles.label}>Lateralidad</Text>
+              <Text style={[styles.label, { marginTop: 4 }]}>Lateralidad</Text>
               <Text style={styles.value}>{report.lateralidad}</Text>
             </View>
+            <View style={{ flex: 1 }}>
+              <Text style={styles.label}>Enfermera/o URPA</Text>
+              <Text style={styles.editableValue}>{report.enfermeraUrpa}</Text>
+              <Text style={[styles.label, { marginTop: 4 }]}>Fecha/hora de entrada</Text>
+              <Text style={styles.editableValue}>{formatDateTime(report.fechaEntradaUrpa)}</Text>
+              <Text style={[styles.label, { marginTop: 4 }]}>Fecha/hora de salida</Text>
+              <Text style={styles.editableValue}>{formatDateTime(report.fechaSalidaUrpa)}</Text>
+            </View>
           </View>
-          <View style={{ marginBottom: 5 }}>
-            <Text style={styles.label}>Enfermera/o URPA</Text>
-            <Text style={styles.value}>{report.enfermeraUrpa}</Text>
-          </View>
-          <View>
-            <Text style={styles.label}>Medicación Pre-URPA</Text>
-            <Text style={styles.value}>{report.medicacionPreUrpa}</Text>
+          <View style={{ marginTop: 5 }}>
+            <Text style={styles.label}>Medicación administrada</Text>
+            <Text style={styles.editableValue}>{report.medicacionPreUrpa}</Text>
           </View>
         </View>
 
-        {/* Checkboxes */}
+        {/* Checkboxes - Tabla */}
         <View style={styles.section}>
-          <View style={styles.checkboxSection}>
-            <View style={styles.checkboxColumn}>
-              <View style={styles.checkboxGroup}>
-                <Text style={styles.checkboxGroupLabel}>Retirada:</Text>
-                <View style={styles.checkboxItem}>
-                  <View style={report.retiradaDispositivos ? styles.checkboxChecked : styles.checkbox} />
-                  <Text style={styles.checkboxLabel}>Dispositivos</Text>
-                </View>
-                <View style={styles.checkboxItem}>
-                  <View style={report.retiradaDentadura ? styles.checkboxChecked : styles.checkbox} />
-                  <Text style={styles.checkboxLabel}>Dentadura</Text>
-                </View>
-              </View>
-
-              <View style={styles.checkboxGroup}>
-                <Text style={styles.checkboxGroupLabel}>Rasurado zona quirúrgica:</Text>
-                <View style={styles.checkboxItem}>
-                  <View style={report.rasuradoZona ? styles.checkboxChecked : styles.checkbox} />
-                  <Text style={styles.checkboxLabel}>Sí</Text>
-                </View>
-              </View>
-
-              <View style={styles.checkboxGroup}>
-                <Text style={styles.checkboxGroupLabel}>Verificación médica:</Text>
-                <View style={styles.checkboxItem}>
-                  <View style={report.verificacionCirujano ? styles.checkboxChecked : styles.checkbox} />
-                  <Text style={styles.checkboxLabel}>Cirujano</Text>
-                </View>
-                <View style={styles.checkboxItem}>
-                  <View style={report.verificacionAnestesista ? styles.checkboxChecked : styles.checkbox} />
-                  <Text style={styles.checkboxLabel}>Anestesista</Text>
-                </View>
-              </View>
+          {/* Cabecera de columnas */}
+          <View style={[styles.tableRow, { backgroundColor: '#e8f4fc' }]}>
+            <Text style={[styles.tableCell, { flex: 2.5, fontWeight: 'bold' }]}> </Text>
+            <Text style={[styles.tableCell, { flex: 1, fontWeight: 'bold', textAlign: 'center' }]}>SI</Text>
+            <Text style={[styles.tableCell, { flex: 1, fontWeight: 'bold', textAlign: 'center' }]}>NO</Text>
+            <Text style={[styles.tableCell, { flex: 1, fontWeight: 'bold', textAlign: 'center' }]}>N/P</Text>
+            <Text style={[styles.tableCellLast, { flex: 1.5, fontWeight: 'bold', textAlign: 'center' }]}> </Text>
+          </View>
+          {/* Retirada dispositivos/dentadura */}
+          <View style={styles.tableRow}>
+            <Text style={[styles.tableCell, { flex: 2.5, fontWeight: 'bold' }]}>Retirada dispositivos/dentadura:</Text>
+            <View style={[styles.tableCell, { flex: 1, alignItems: 'center', justifyContent: 'center' }]}>
+              <View style={report.retiradaDispositivos ? styles.checkboxChecked : styles.checkbox} />
             </View>
-
-            <View style={styles.checkboxColumn}>
-              <View style={styles.checkboxGroup}>
-                <Text style={styles.checkboxGroupLabel}>Pruebas complementarias:</Text>
-                <View style={styles.checkboxItem}>
-                  <View style={report.pruebasEcg ? styles.checkboxChecked : styles.checkbox} />
-                  <Text style={styles.checkboxLabel}>ECG</Text>
-                </View>
-                <View style={styles.checkboxItem}>
-                  <View style={report.pruebasRx ? styles.checkboxChecked : styles.checkbox} />
-                  <Text style={styles.checkboxLabel}>RX</Text>
-                </View>
-                <View style={styles.checkboxItem}>
-                  <View style={report.pruebasAs ? styles.checkboxChecked : styles.checkbox} />
-                  <Text style={styles.checkboxLabel}>AS</Text>
-                </View>
-                <View style={styles.checkboxItem}>
-                  <View style={report.pruebasInfExterno ? styles.checkboxChecked : styles.checkbox} />
-                  <Text style={styles.checkboxLabel}>INF EXTERNO</Text>
-                </View>
-              </View>
-
-              <View style={styles.checkboxGroup}>
-                <Text style={styles.checkboxGroupLabel}>Otros:</Text>
-                <View style={styles.checkboxItem}>
-                  <View style={report.marcaje ? styles.checkboxChecked : styles.checkbox} />
-                  <Text style={styles.checkboxLabel}>Marcaje</Text>
-                </View>
-                <View style={styles.checkboxItem}>
-                  <View style={report.pruebasCruzadas ? styles.checkboxChecked : styles.checkbox} />
-                  <Text style={styles.checkboxLabel}>Pruebas cruzadas</Text>
-                </View>
-                <View style={styles.checkboxItem}>
-                  <View style={report.transfusion ? styles.checkboxChecked : styles.checkbox} />
-                  <Text style={styles.checkboxLabel}>Transfusión</Text>
-                </View>
-              </View>
+            <View style={[styles.tableCell, { flex: 1, alignItems: 'center', justifyContent: 'center' }]}>
+              <View style={report.retiradaDentadura ? styles.checkboxChecked : styles.checkbox} />
             </View>
+            <View style={[styles.tableCell, { flex: 1 }]} />
+            <View style={[styles.tableCellLast, { flex: 1.5 }]} />
+          </View>
+          {/* Rasurado zona QX */}
+          <View style={styles.tableRow}>
+            <Text style={[styles.tableCell, { flex: 2.5, fontWeight: 'bold' }]}>Rasurado zona QX:</Text>
+            <View style={[styles.tableCell, { flex: 1, alignItems: 'center', justifyContent: 'center' }]}>
+              <View style={report.rasuradoZona ? styles.checkboxChecked : styles.checkbox} />
+            </View>
+            <View style={[styles.tableCell, { flex: 1, alignItems: 'center', justifyContent: 'center' }]}>
+              <View style={report.rasuradoZonaNo ? styles.checkboxChecked : styles.checkbox} />
+            </View>
+            <View style={[styles.tableCell, { flex: 1, alignItems: 'center', justifyContent: 'center' }]}>
+              <View style={report.rasuradoZonaNp ? styles.checkboxChecked : styles.checkbox} />
+            </View>
+            <View style={[styles.tableCellLast, { flex: 1.5 }]} />
+          </View>
+          {/* Pruebas Complementarias */}
+          <View style={styles.tableRow}>
+            <Text style={[styles.tableCell, { flex: 2.5, fontWeight: 'bold' }]}>Pruebas Complementarias:</Text>
+            <View style={[styles.tableCell, { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 2 }]}>
+              <View style={report.pruebasEcg ? styles.checkboxChecked : styles.checkbox} />
+              <Text style={styles.checkboxLabel}>ECG</Text>
+            </View>
+            <View style={[styles.tableCell, { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 2 }]}>
+              <View style={report.pruebasRx ? styles.checkboxChecked : styles.checkbox} />
+              <Text style={styles.checkboxLabel}>RX</Text>
+            </View>
+            <View style={[styles.tableCell, { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 2 }]}>
+              <View style={report.pruebasAs ? styles.checkboxChecked : styles.checkbox} />
+              <Text style={styles.checkboxLabel}>AS</Text>
+            </View>
+            <View style={[styles.tableCellLast, { flex: 1.5, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 2 }]}>
+              <View style={report.pruebasInfExterno ? styles.checkboxChecked : styles.checkbox} />
+              <Text style={styles.checkboxLabel}>INF EXTERNO</Text>
+            </View>
+          </View>
+          {/* Verificación médica - Cirujano */}
+          <View style={[styles.tableRow, { borderBottomWidth: 0 }]}>
+            <View style={[styles.tableCell, { flex: 2.5 }]}>
+              <Text style={{ fontWeight: 'bold' }}>Verificación médica:</Text>
+              <Text style={{ fontSize: 7 }}>  Cirujano:</Text>
+            </View>
+            <View style={[styles.tableCell, { flex: 1, alignItems: 'center', justifyContent: 'flex-end', paddingBottom: 2 }]}>
+              <View style={report.verificacionCirujano ? styles.checkboxChecked : styles.checkbox} />
+            </View>
+            <View style={[styles.tableCell, { flex: 1, alignItems: 'center', justifyContent: 'flex-end', paddingBottom: 2 }]}>
+              <View style={report.verificacionCirujanoNo ? styles.checkboxChecked : styles.checkbox} />
+            </View>
+            <View style={[styles.tableCell, { flex: 1 }]} />
+            <View style={[styles.tableCellLast, { flex: 1.5 }]} />
+          </View>
+          {/* Verificación médica - Anestesista */}
+          <View style={styles.tableRow}>
+            <Text style={[styles.tableCell, { flex: 2.5, fontSize: 7, paddingLeft: 10 }]}>  Anestesista:</Text>
+            <View style={[styles.tableCell, { flex: 1, alignItems: 'center', justifyContent: 'center' }]}>
+              <View style={report.verificacionAnestesista ? styles.checkboxChecked : styles.checkbox} />
+            </View>
+            <View style={[styles.tableCell, { flex: 1, alignItems: 'center', justifyContent: 'center' }]}>
+              <View style={report.verificacionAnestesistaNo ? styles.checkboxChecked : styles.checkbox} />
+            </View>
+            <View style={[styles.tableCell, { flex: 1 }]} />
+            <View style={[styles.tableCellLast, { flex: 1.5 }]} />
+          </View>
+          {/* Marcaje */}
+          <View style={styles.tableRow}>
+            <Text style={[styles.tableCell, { flex: 2.5, fontWeight: 'bold' }]}>Marcaje:</Text>
+            <View style={[styles.tableCell, { flex: 1, alignItems: 'center', justifyContent: 'center' }]}>
+              <View style={report.marcaje ? styles.checkboxChecked : styles.checkbox} />
+            </View>
+            <View style={[styles.tableCell, { flex: 1, alignItems: 'center', justifyContent: 'center' }]}>
+              <View style={report.marcajeNo ? styles.checkboxChecked : styles.checkbox} />
+            </View>
+            <View style={[styles.tableCell, { flex: 1, alignItems: 'center', justifyContent: 'center' }]}>
+              <View style={report.marcajeNp ? styles.checkboxChecked : styles.checkbox} />
+            </View>
+            <View style={[styles.tableCellLast, { flex: 1.5 }]} />
+          </View>
+          {/* Pruebas Cruzadas */}
+          <View style={styles.tableRow}>
+            <Text style={[styles.tableCell, { flex: 2.5, fontWeight: 'bold' }]}>Pruebas Cruzadas:</Text>
+            <View style={[styles.tableCell, { flex: 1, alignItems: 'center', justifyContent: 'center' }]}>
+              <View style={report.pruebasCruzadas ? styles.checkboxChecked : styles.checkbox} />
+            </View>
+            <View style={[styles.tableCell, { flex: 1, alignItems: 'center', justifyContent: 'center' }]}>
+              <View style={report.pruebasCruzadasNo ? styles.checkboxChecked : styles.checkbox} />
+            </View>
+            <View style={[styles.tableCell, { flex: 1, alignItems: 'center', justifyContent: 'center' }]}>
+              <View style={report.pruebasCruzadasNp ? styles.checkboxChecked : styles.checkbox} />
+            </View>
+            <View style={[styles.tableCellLast, { flex: 1.5, flexDirection: 'row', alignItems: 'center' }]}>
+              <Text style={[styles.checkboxLabel, { fontWeight: 'bold', marginRight: 3 }]}>U RESERVADAS:</Text>
+              <Text style={styles.checkboxLabel}>{report.uReservadas || ''}</Text>
+            </View>
+          </View>
+          {/* Transfusión */}
+          <View style={styles.tableRow}>
+            <Text style={[styles.tableCell, { flex: 2.5, fontWeight: 'bold' }]}>Transfusión:</Text>
+            <View style={[styles.tableCell, { flex: 1, alignItems: 'center', justifyContent: 'center' }]}>
+              <View style={report.transfusion ? styles.checkboxChecked : styles.checkbox} />
+            </View>
+            <View style={[styles.tableCell, { flex: 1, alignItems: 'center', justifyContent: 'center' }]}>
+              <View style={report.transfusionNo ? styles.checkboxChecked : styles.checkbox} />
+            </View>
+            <View style={[styles.tableCell, { flex: 1, alignItems: 'center', justifyContent: 'center' }]}>
+              <View style={report.transfusionNp ? styles.checkboxChecked : styles.checkbox} />
+            </View>
+            <View style={[styles.tableCellLast, { flex: 1.5 }]} />
           </View>
         </View>
 

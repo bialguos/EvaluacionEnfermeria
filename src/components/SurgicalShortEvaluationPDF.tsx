@@ -231,7 +231,7 @@ const SurgicalShortEvaluationPDF: React.FC<SurgicalShortEvaluationPDFProps> = ({
         </View>
 
         {/* DUE y Nº Colegiado */}
-        <View style={styles.row}>
+        <View style={[styles.row, { marginBottom: 3 }]}>
           <View style={{ flex: 2, marginRight: 6 }}>
             <Text style={styles.label}>DUE</Text>
             <Text style={styles.value}>{evaluation.nurse}</Text>
@@ -239,6 +239,20 @@ const SurgicalShortEvaluationPDF: React.FC<SurgicalShortEvaluationPDFProps> = ({
           <View style={{ flex: 1 }}>
             <Text style={styles.label}>Nº Colegiado</Text>
             <Text style={styles.value}>{evaluation.nurseCollegiateNumber}</Text>
+          </View>
+        </View>
+
+        {/* Intervención y Lateralidad */}
+        <View style={[styles.row, { marginBottom: 3 }]}>
+          <View style={{ flex: 1 }}>
+            <Text style={styles.label}>Intervención</Text>
+            <Text style={styles.value}>{evaluation.intervencion}</Text>
+          </View>
+        </View>
+        <View style={[styles.row, { marginBottom: 6 }]}>
+          <View style={{ flex: 1 }}>
+            <Text style={styles.label}>Lateralidad</Text>
+            <Text style={styles.value}>{evaluation.lateralidad}</Text>
           </View>
         </View>
 
