@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 
-import PatientHeader from './PatientHeader';
 import type { CMAEvaluation } from '../types/evaluation';
 
 interface CMAEvaluationFormProps {

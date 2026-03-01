@@ -339,7 +339,6 @@ const AdultPatientEvaluationForm: React.FC<AdultPatientEvaluationFormProps> = ({
   };
 
   const inputStyle = { backgroundColor: '#fff9e6', border: '1px solid #ccc', padding: '4px 8px', borderRadius: '4px', width: '100%', boxSizing: 'border-box' as const };
-  const readonlyStyle = { backgroundColor: '#f5f5f5', border: '1px solid #ddd', padding: '4px 8px', borderRadius: '4px', width: '100%', boxSizing: 'border-box' as const };
   const sectionHeaderStyle: React.CSSProperties = {
     backgroundColor: '#2c3e50', color: 'white', padding: '6px 12px',
     fontWeight: 'bold', fontSize: '0.9em', marginBottom: '10px', borderRadius: '4px',
