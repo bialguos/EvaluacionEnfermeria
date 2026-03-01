@@ -162,20 +162,33 @@ const CMAEvaluationForm = ({ initialData, onSave, onCancel }: CMAEvaluationFormP
     onSave(evaluation);
   };
 
+  const sectionHeaderStyle: React.CSSProperties = {
+    backgroundColor: '#2c3e50', color: 'white', padding: '6px 12px',
+    fontWeight: 'bold', fontSize: '0.9em', marginBottom: '10px', borderRadius: '4px',
+  };
+
   return (
-    <div className="evaluation-form">
-      <PatientHeader />
+    <div className="surgical-report-form">
+      {/* HEADER */}
+      <div className="report-header">
+        <div style={{ flex: 1 }}>
+          <div className="miks-logo">MIKS</div>
+          <p style={{ margin: '5px 0 0 0', fontSize: '0.9em', color: '#666' }}>Sistema de Información Hospitalaria</p>
+        </div>
+        <div style={{ textAlign: 'center', flex: 2 }}>
+          <h2 style={{ margin: '0 0 5px 0', color: '#2c3e50', fontSize: '1.4em' }}>
+            EVALUACIÓN DE ENFERMERÍA CIRUGÍA MAYOR AMBULATORIA
+          </h2>
+        </div>
+        <div style={{ flex: 1 }} />
+      </div>
 
       <form onSubmit={handleSubmit}>
-        <div className="form-header">
-          <h2>Evaluación de Enfermería Cirugía Mayor Ambulatoria</h2>
-        </div>
-
         {/* Datos del Registro */}
-        <div className="form-section" style={{ border: '1px solid #ccc', backgroundColor: 'white', padding: '12px' }}>
-          <h3 style={{ marginTop: 0, marginBottom: '10px', fontSize: '1em', borderBottom: '1px solid #ccc', paddingBottom: '6px' }}>
-            Datos del Registro
-          </h3>
+        <div style={{ border: '2px solid #2c3e50', borderRadius: '4px', padding: '10px', marginBottom: '15px' }}>
+          <div style={{ fontWeight: 'bold', color: '#2c3e50', marginBottom: '8px', fontSize: '0.95em' }}>
+            DATOS DEL REGISTRO
+          </div>
 
           {/* Fila 1: DUE / Fecha / Nº Col. */}
           <div className="form-row" style={{ gap: '10px', marginBottom: '8px', alignItems: 'flex-end' }}>
@@ -378,12 +391,7 @@ const CMAEvaluationForm = ({ initialData, onSave, onCancel }: CMAEvaluationFormP
 
         {/* 1. NECESIDAD DE RESPIRACIÓN */}
         <div className="form-section">
-          <h3>
-            1. NECESIDAD DE RESPIRACIÓN
-            {formData.respiration.noAlteration && (
-              <span className="no-alteration-badge" style={{ marginLeft: '15px' }}>Sin alteración observada</span>
-            )}
-          </h3>
+          <div style={sectionHeaderStyle}>1. NECESIDAD DE RESPIRACIÓN</div>
           <div className="checkbox-group">
             <div className="checkbox-item">
               <input
@@ -480,7 +488,7 @@ const CMAEvaluationForm = ({ initialData, onSave, onCancel }: CMAEvaluationFormP
 
         {/* 2. NECESIDAD DE ALIMENTACIÓN */}
         <div className="form-section">
-          <h3>2. NECESIDAD DE ALIMENTACIÓN</h3>
+          <div style={sectionHeaderStyle}>2. NECESIDAD DE ALIMENTACIÓN</div>
           <div className="form-row">
             <span style={{ fontWeight: '500' }}>Ayunas:</span>
             <div className="checkbox-item">
@@ -536,12 +544,7 @@ const CMAEvaluationForm = ({ initialData, onSave, onCancel }: CMAEvaluationFormP
 
         {/* 3. NECESIDAD DE ELIMINACIÓN */}
         <div className="form-section">
-          <h3>
-            3. NECESIDAD DE ELIMINACIÓN
-            {formData.elimination.noAlteration && (
-              <span className="no-alteration-badge" style={{ marginLeft: '15px' }}>Sin alteración observada</span>
-            )}
-          </h3>
+          <div style={sectionHeaderStyle}>3. NECESIDAD DE ELIMINACIÓN</div>
           <div className="form-row">
             <div style={{ flex: 1 }}>
               <p style={{ fontWeight: '500', marginBottom: '10px' }}>Patrón urinario:</p>
@@ -724,7 +727,7 @@ const CMAEvaluationForm = ({ initialData, onSave, onCancel }: CMAEvaluationFormP
 
         {/* 4. NECESIDAD DE MOVILIZACIÓN */}
         <div className="form-section">
-          <h3>4. NECESIDAD DE MOVILIZACIÓN</h3>
+          <div style={sectionHeaderStyle}>4. NECESIDAD DE MOVILIZACIÓN</div>
           <div className="checkbox-group">
             <div className="checkbox-item">
               <input
@@ -808,7 +811,7 @@ const CMAEvaluationForm = ({ initialData, onSave, onCancel }: CMAEvaluationFormP
 
         {/* 5. NECESIDAD DE REPOSO Y SUEÑO */}
         <div className="form-section">
-          <h3>5. NECESIDAD DE REPOSO Y SUEÑO</h3>
+          <div style={sectionHeaderStyle}>5. NECESIDAD DE REPOSO Y SUEÑO</div>
           <div className="form-row">
             <span style={{ fontWeight: '500' }}>Patrón de sueño habitual:</span>
             <div className="checkbox-item">
@@ -862,7 +865,7 @@ const CMAEvaluationForm = ({ initialData, onSave, onCancel }: CMAEvaluationFormP
 
         {/* 6. NECESIDAD DE SEGURIDAD */}
         <div className="form-section">
-          <h3>6. NECESIDAD DE SEGURIDAD</h3>
+          <div style={sectionHeaderStyle}>6. NECESIDAD DE SEGURIDAD</div>
           <div className="form-row">
             <div className="form-group inline">
               <label>Riesgo de caídas. Escala Downton:</label>
@@ -978,12 +981,7 @@ const CMAEvaluationForm = ({ initialData, onSave, onCancel }: CMAEvaluationFormP
 
         {/* 7. NECESIDAD DE COMUNICACIÓN */}
         <div className="form-section">
-          <h3>
-            7. NECESIDAD DE COMUNICACIÓN
-            {formData.communication.noAlteration && (
-              <span className="no-alteration-badge" style={{ marginLeft: '15px' }}>Sin alteración observada</span>
-            )}
-          </h3>
+          <div style={sectionHeaderStyle}>7. NECESIDAD DE COMUNICACIÓN</div>
           <div className="form-row">
             <span style={{ fontWeight: '500' }}>Estado de ánimo/emocional:</span>
             <div className="checkbox-item">
@@ -1275,7 +1273,7 @@ const CMAEvaluationForm = ({ initialData, onSave, onCancel }: CMAEvaluationFormP
 
         {/* 8. NECESIDAD CONFORT */}
         <div className="form-section">
-          <h3>8. NECESIDAD CONFORT</h3>
+          <div style={sectionHeaderStyle}>8. NECESIDAD CONFORT</div>
           <div className="form-row">
             <span style={{ fontWeight: '500' }}>Dolor:</span>
             <div className="checkbox-item">
@@ -1397,7 +1395,7 @@ const CMAEvaluationForm = ({ initialData, onSave, onCancel }: CMAEvaluationFormP
 
         {/* 9. NECESIDAD DE APRENDIZAJE */}
         <div className="form-section">
-          <h3>9. NECESIDAD DE APRENDIZAJE</h3>
+          <div style={sectionHeaderStyle}>9. NECESIDAD DE APRENDIZAJE</div>
           <div className="form-row">
             <span style={{ fontWeight: '500' }}>Obstáculos para aprender:</span>
             <div className="checkbox-item">
@@ -1473,7 +1471,7 @@ const CMAEvaluationForm = ({ initialData, onSave, onCancel }: CMAEvaluationFormP
 
         {/* 10. CHECKLIST PREQUIRÚRGICO */}
         <div className="form-section">
-          <h3>10. CHECKLIST PREQUIRÚRGICO</h3>
+          <div style={sectionHeaderStyle}>10. CHECKLIST PREQUIRÚRGICO</div>
           <div className="checklist-table">
             <table style={{ width: '100%', borderCollapse: 'collapse' }}>
               <tbody>
@@ -2033,13 +2031,12 @@ const CMAEvaluationForm = ({ initialData, onSave, onCancel }: CMAEvaluationFormP
           </div>
         </div>
 
-        <div className="form-actions">
-          <button type="button" className="cancel-button" onClick={onCancel}>
-            Cancelar
-          </button>
-          <button type="submit" className="save-button">
-            Guardar Evaluación
-          </button>
+        <div className="form-navigation">
+          <div />
+          <div style={{ display: 'flex', gap: '10px' }}>
+            <button type="button" className="cancel-button" onClick={onCancel}>Cancelar</button>
+            <button type="submit" className="save-button">Guardar Evaluación</button>
+          </div>
         </div>
       </form>
     </div>
