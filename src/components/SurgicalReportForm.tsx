@@ -1,15 +1,16 @@
-import React, { useState, useEffect } from 'react';
-import type { SurgicalReport } from '../types/surgicalReport';
-import HospitalizationSection from './surgical-sections/HospitalizationSection';
-import PreUrpaSection from './surgical-sections/PreUrpaSection';
+import React, { useEffect, useState } from 'react';
+
+import AdditionalFieldsSection from './surgical-sections/AdditionalFieldsSection';
 import EditableSections from './surgical-sections/EditableSections';
-import QuirofanoSection from './surgical-sections/QuirofanoSection';
-import ObservationsSection from './surgical-sections/ObservationsSection';
-import UrpaSection from './surgical-sections/UrpaSection';
+import HospitalizationSection from './surgical-sections/HospitalizationSection';
 import MedicalOrdersSection from './surgical-sections/MedicalOrdersSection';
 import MedicationSection from './surgical-sections/MedicationSection';
-import AdditionalFieldsSection from './surgical-sections/AdditionalFieldsSection';
+import ObservationsSection from './surgical-sections/ObservationsSection';
+import PreUrpaSection from './surgical-sections/PreUrpaSection';
+import QuirofanoSection from './surgical-sections/QuirofanoSection';
 import SignatureSection from './surgical-sections/SignatureSection';
+import type { SurgicalReport } from '../types/surgicalReport';
+import UrpaSection from './surgical-sections/UrpaSection';
 import VitalConstantsTable from './VitalConstantsTable';
 import { generateAndDownloadPDF } from '../utils/pdfGenerator';
 
@@ -98,7 +99,7 @@ const SurgicalReportForm: React.FC<SurgicalReportFormProps> = ({
       fechaHoraInforme: new Date().toISOString()
     }
   );
-
+ console.log('h');
   useEffect(() => {
     if (initialData) {
       setFormData(initialData);
