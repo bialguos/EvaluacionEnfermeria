@@ -156,6 +156,7 @@ function App() {
       lateralidad: surgery.lateralidad,
       enfermeraUrpa: surgery.enfermeraUrpa,
       medicacionPreUrpa: surgery.medicacionPreUrpa,
+      registroAntibiotico: [],
 
       // Checkboxes editables - por defecto false
       retiradaDispositivos: false,
