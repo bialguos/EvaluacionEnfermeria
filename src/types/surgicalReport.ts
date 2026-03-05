@@ -18,6 +18,15 @@ export interface MedicationRow {
   dosis: string;
 }
 
+// Fila de registro antibiótico
+export interface AntibioticRow {
+  id: string;
+  antibiotico: string;
+  dosis: string;
+  horaAdministracion: string;
+  prescritoPor: string;
+}
+
 // Datos del paciente mock
 export interface MockPatient {
   id: string;
@@ -83,6 +92,7 @@ export interface SurgicalReport {
   lateralidad: string;
   enfermeraUrpa: string;
   medicacionPreUrpa: string;
+  registroAntibiotico: AntibioticRow[];
 
   // Checkboxes editables - Página 1
   retiradaDispositivos: boolean;  // SI para "Retirada dispositivos/dentadura"

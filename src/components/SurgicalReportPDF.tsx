@@ -322,6 +322,28 @@ const SurgicalReportPDF: React.FC<SurgicalReportPDFProps> = ({ report }) => {
             <Text style={styles.label}>Medicación administrada</Text>
             <Text style={styles.editableValue}>{report.medicacionPreUrpa}</Text>
           </View>
+
+          {report.registroAntibiotico && report.registroAntibiotico.length > 0 && (
+            <View style={{ marginTop: 6 }}>
+              <Text style={[styles.label, { marginBottom: 3 }]}>Registro antibiótico prescrito</Text>
+              <View style={styles.table}>
+                <View style={styles.tableHeader}>
+                  <Text style={[styles.tableCell, { flex: 1.5 }]}>ANTIBIÓTICO</Text>
+                  <Text style={[styles.tableCell, { flex: 0.8 }]}>DOSIS</Text>
+                  <Text style={[styles.tableCell, { flex: 0.8 }]}>HORA ADM.</Text>
+                  <Text style={[styles.tableCellLast, { flex: 1.5 }]}>PRESCRITO POR</Text>
+                </View>
+                {report.registroAntibiotico.map((ab, index) => (
+                  <View key={index} style={styles.tableRow}>
+                    <Text style={[styles.tableCell, { flex: 1.5 }]}>{ab.antibiotico}</Text>
+                    <Text style={[styles.tableCell, { flex: 0.8 }]}>{ab.dosis}</Text>
+                    <Text style={[styles.tableCell, { flex: 0.8 }]}>{ab.horaAdministracion}</Text>
+                    <Text style={[styles.tableCellLast, { flex: 1.5 }]}>{ab.prescritoPor}</Text>
+                  </View>
+                ))}
+              </View>
+            </View>
+          )}
         </View>
 
         {/* Checkboxes - Tabla */}

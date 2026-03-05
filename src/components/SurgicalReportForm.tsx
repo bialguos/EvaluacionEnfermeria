@@ -48,6 +48,7 @@ const SurgicalReportForm: React.FC<SurgicalReportFormProps> = ({
       lateralidad: '',
       enfermeraUrpa: '',
       medicacionPreUrpa: '',
+      registroAntibiotico: [],
       retiradaDispositivos: false,
       retiradaDentadura: false,
       rasuradoZona: false,
@@ -240,10 +241,12 @@ const SurgicalReportForm: React.FC<SurgicalReportFormProps> = ({
             medicacionPreUrpa={formData.medicacionPreUrpa}
             fechaEntradaUrpa={formData.fechaEntradaUrpa}
             fechaSalidaUrpa={formData.fechaSalidaUrpa}
+            registroAntibiotico={formData.registroAntibiotico}
             onChangeEnfermera={(value) => handleFieldChange('enfermeraUrpa', value)}
             onChangeMedicacion={(value) => handleFieldChange('medicacionPreUrpa', value)}
             onChangeFechaEntrada={(value) => handleFieldChange('fechaEntradaUrpa', value)}
             onChangeFechaSalida={(value) => handleFieldChange('fechaSalidaUrpa', value)}
+            onChangeRegistroAntibiotico={(rows) => handleFieldChange('registroAntibiotico', rows)}
           />
 
           <EditableSections
